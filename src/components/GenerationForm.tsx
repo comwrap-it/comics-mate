@@ -81,13 +81,10 @@ export const GenerationForm: React.FC = () => {
   };
   
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       <Card className="bg-white border-gray-400 shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-gray-900 mb-2">
-            Create Your Caricature
-          </CardTitle>
-          <CardDescription className="text-gray-700">
+          <CardDescription className="text-gray-700 mb-10">
             Upload your photo and customize the style
           </CardDescription>
         </CardHeader>
@@ -242,7 +239,7 @@ export const GenerationForm: React.FC = () => {
             ) : (
               <>
                 <Sparkles className="w-5 h-5 mr-2" />
-                Generate Caricature
+                Generate
               </>
             )}
           </Button>

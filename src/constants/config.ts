@@ -60,6 +60,7 @@ export const QUALITY_OPTIONS: QualityConfig[] = [
 
 export const MODEL_OPTIONS = [
   { value: 'openai', label: 'OpenAI' },
+  { value: 'gemini', label: 'Gemini' },
   { value: 'firefly', label: 'Adobe Firefly' }
 ];
 

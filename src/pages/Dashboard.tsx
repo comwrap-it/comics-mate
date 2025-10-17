@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
-import { GenerationForm } from '../components/GenerationForm';
-import { Palette } from 'lucide-react';
+import {Card, CardDescription, CardHeader, CardTitle} from '../components/ui/Card';
+import {ImageIcon, Palette} from 'lucide-react';
+import {Link} from 'react-router-dom';
+import clsx from 'clsx';
 
 export const Dashboard: React.FC = () => {
   // Mock statistics data
@@ -44,6 +45,20 @@ export const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Create new Images */}
+      <div className="flex items-center justify-center content-center">
+        <Link
+            to="/new-image"
+            className={clsx(
+                'flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200',
+                'text-gray-900 hover:bg-[#374151] hover:text-white border-2 border-gray-900 mb-10 mt-10'
+            )}
+        >
+          <ImageIcon className="w-5 h-5" />
+          <span className="font-medium">Create new image</span>
+        </Link>
+      </div>
+
       {/* Recent Images */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
@@ -64,24 +79,6 @@ export const Dashboard: React.FC = () => {
             </CardDescription>
           </CardHeader>
         </Card>
-      </div>
-
-      {/* Generation Section - Image Generator Agent */}
-      <div className="bg-white border border-gray-100 rounded-lg p-8 shadow-md">
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-[#3b82f6] p-3 rounded-full shadow-lg">
-              <Palette className="w-6 h-6 text-white" />
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Image Generator Agent
-          </h2>
-          <p className="text-gray-600">
-            Transform your photos into incredible personalized caricatures with AI
-          </p>
-        </div>
-        <GenerationForm />
       </div>
     </div>
   );
