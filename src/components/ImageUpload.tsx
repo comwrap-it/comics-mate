@@ -1,175 +1,109 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { clsx } from 'clsx';
+import { X } from "lucide-react";
+import { useRef, useState } from "react";
+import { motion } from "framer-motion";
 
 interface ImageUploadProps {
-  onImageSelect: (file: File) => void;
-  error?: string;
-  currentImage?: File;
+    onImageChange: (base64: string) => void;
+    value?: string;
 }
 
-export const ImageUpload: React.FC<ImageUploadProps> = ({
-  onImageSelect,
-  error,
-  currentImage
-}) => {
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+export const ImageUpload = ({ onImageChange, value }: ImageUploadProps) => {
+    const [preview, setPreview] = useState<string>(value || "");
+    const [imgSize, setImgSize] = useState<{ width: number; height: number } | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Genera anteprima quando cambia l'immagine
-  React.useEffect(() => {
-    if (currentImage) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(currentImage);
-    } else {
-      setPreview(null);
-    }
-  }, [currentImage]);
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-  const handleFileSelect = useCallback((file: File) => {
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!file.type.startsWith("image/")) {
+            alert("Please upload a valid image file (JPEG, PNG, WEBP)");
+            return;
+        }
 
-    if (!allowedTypes.includes(file.type)) {
-      return;
-    }
+        if (file.size > 5 * 1024 * 1024) {
+            alert("Image size should be less than 5MB");
+            return;
+        }
 
-    if (file.size > maxSize) {
-      return;
-    }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64String = reader.result as string;
+            const img = new Image();
+            img.onload = () => {
+                setImgSize({ width: img.width, height: img.height });
+            };
+            img.src = base64String;
+            setPreview(base64String);
+            onImageChange(base64String);
+        };
+        reader.readAsDataURL(file);
+    };
 
-    onImageSelect(file);
-  }, [onImageSelect]);
+    const handleRemove = () => {
+        setPreview("");
+        setImgSize(null);
+        onImageChange("");
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
+    const handleClick = () => fileInputRef.current?.click();
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
+    return (
+        <div className="space-y-3">
+            <label className="block text-lg font-bold text-foreground">
+                Your photo <span className="text-primary">*</span>
+            </label>
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleFileChange}
+                className="hidden"
+            />
 
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      handleFileSelect(files[0]);
-    }
-  }, [handleFileSelect]);
-
-  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      handleFileSelect(files[0]);
-    }
-  }, [handleFileSelect]);
-
-  const handleRemoveImage = useCallback(() => {
-    setPreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    // Chiamiamo onImageSelect con un file vuoto per resettare
-  }, []);
-
-  const openFileDialog = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
-
-  return (
-    <div className="w-full">
-      <label className="block text-sm font-medium text-gray-900 mb-2">
-        Upload your photo *
-      </label>
-      
-      <div
-        className={clsx(
-          'relative border-2 border-dashed rounded-lg transition-all duration-200 cursor-pointer',
-          isDragOver
-            ? 'border-[#3b82f6] bg-blue-50'
-            : error
-            ? 'border-red-500 bg-red-50'
-            : 'border-gray-400 bg-white hover:border-gray-500 hover:bg-gray-50',
-          preview ? 'p-2' : 'p-8'
-        )}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={openFileDialog}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          onChange={handleFileInputChange}
-          className="hidden"
-        />
-        
-        {preview ? (
-          <div className="relative">
-            <img
-                src={preview}
-                alt="Preview"
-                className="w-full aspect-square object-cover rounded-lg"
-              />
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleRemoveImage();
-              }}
-              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-            <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
-              {currentImage?.name}
-            </div>
-          </div>
-        ) : (
-          <div className="text-center">
-            <div className="mx-auto w-12 h-12 text-gray-500 mb-4">
-              {isDragOver ? (
-                <Upload className="w-full h-full text-[#3b82f6]" />
-              ) : (
-                <ImageIcon className="w-full h-full" />
-              )}
-            </div>
-            <div className="text-sm">
-              {isDragOver ? (
-                <p className="font-medium text-[#3b82f6]">Drop the image here</p>
-              ) : (
-                <>
-                  <p className="font-medium text-gray-900">Click to upload or drag here</p>
-                  <p className="text-xs text-gray-600 mt-1">
-                    JPG, PNG or WebP (max 10MB)
-                  </p>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-      
-      {error && (
-        <p className="mt-1 text-sm text-red-600 font-medium">
-          {error}
-        </p>
-      )}
-      
-      {!error && (
-        <p className="mt-1 text-xs text-gray-600">
-          Upload a clear photo of your face for the best results
-        </p>
-      )}
-    </div>
-  );
+            {preview ? (
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative rounded-xl overflow-hidden border-4 border-foreground mx-auto"
+                    style={{
+                        width: imgSize ? `${imgSize.width}px` : "100%",
+                        maxWidth: "100%",
+                    }}
+                >
+                    <img src={preview} alt="Preview" className="w-full h-auto object-contain" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end justify-center p-4 gap-3">
+                        <button
+                            type="button"
+                            onClick={handleClick}
+                            className="bg-secondary text-secondary-foreground px-6 py-2 rounded-lg font-bold border-2 border-foreground hover:-translate-y-0.5 transition-all"
+                        >
+                            Change photo
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleRemove}
+                            className="bg-destructive text-destructive-foreground px-4 py-2 rounded-lg font-bold border-2 border-foreground hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                        >
+                            <X className="w-5 h-5" />
+                            Remove photo
+                        </button>
+                    </div>
+                </motion.div>
+            ) : (
+                // Stato iniziale: nessuna immagine
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="border-4 border-dashed border-foreground rounded-xl flex flex-col items-center justify-center p-8 cursor-pointer hover:bg-foreground/5 transition"
+                    onClick={handleClick}
+                >
+                    <p className="text-foreground font-semibold text-lg">Load your photo</p>
+                    <p className="text-sm text-muted-foreground mt-1">(JPEG, PNG, or WEBP, max 5MB)</p>
+                </motion.div>
+            )}
+        </div>
+    );
 };
