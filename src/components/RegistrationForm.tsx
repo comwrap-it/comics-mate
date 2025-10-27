@@ -14,7 +14,8 @@ import {BadgePreview} from "./BadgePreview";
 import {generateBadge} from "@/utils/api";
 
 interface RegistrationFormProps {
-    onBadgeGenerated: (imageUrl: string, name: string) => void;
+    onBadgeGenerated: (imageUrl: string, name: string, category: string) => void;
+    setShowBadgeList: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface FormData {
@@ -54,7 +55,7 @@ const QUALITY = [
     {value: "high", label: "High"},
 ];
 
-export const RegistrationForm = ({onBadgeGenerated}: RegistrationFormProps) => {
+export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: RegistrationFormProps) => {
     const {register, handleSubmit, watch, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
             style: "superhero",
@@ -67,6 +68,7 @@ export const RegistrationForm = ({onBadgeGenerated}: RegistrationFormProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [generatedImage, setGeneratedImage] = useState<string>("");
+    const [category, setCategory] = useState<string>("");
     const [photoFile, setPhotoFile] = useState<File | null>(null);
 
     const selectedStyle = watch("style");
@@ -100,7 +102,8 @@ export const RegistrationForm = ({onBadgeGenerated}: RegistrationFormProps) => {
 
             const imageUrl = URL.createObjectURL(responseBlob);
             setGeneratedImage(imageUrl);
-            onBadgeGenerated(imageUrl, data.name);
+            setCategory(data.style);
+            onBadgeGenerated(imageUrl, data.name, data.style);
             toast.success("Badge generated!");
         } catch (error) {
             console.error("Error while generating badge:", error);
@@ -110,9 +113,30 @@ export const RegistrationForm = ({onBadgeGenerated}: RegistrationFormProps) => {
         }
     };
 
-    const handleClosePreview = () => {
+    const handleClosePreview = async () => {
+        if (generatedImage) {
+            const blob = await fetch(generatedImage).then(res => res.blob());
+            const base64 = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+
+            fetch("http://localhost:5000/save-badge", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    image: base64,
+                    category: category,
+                })
+            })
+                .then(res => res.json())
+                .then(data => console.log("Badge saved:", data))
+                .catch(err => console.error("Error saving badge:", err));
+        }
         setGeneratedImage("");
-        // Optionally reset form
+        setTimeout(() => setShowBadgeList(true), 2000);
     };
 
     return (
