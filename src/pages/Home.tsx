@@ -1,5 +1,5 @@
 import {motion} from "framer-motion";
-import {RefreshCcw, Gift, Snowflake, Star} from "lucide-react";
+import {RefreshCcw, Gift, Snowflake, Star, Trash2} from "lucide-react";
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {RegistrationForm} from "@/components/RegistrationForm";
@@ -22,21 +22,60 @@ const Home = () => {
 
     useEffect(() => {
         fetch("http://localhost:5000/get-badges")
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Server responded with status ${res.status}`);
+                }
+                return res.json();
+            })
             .then(data => setPreviousBadges(data))
-            .catch(err => console.error("Error while fetching badges", err));
+            .catch(err => {
+                console.error("Error while fetching badges:", err);
+                // Backend might not be running, show empty list
+                setPreviousBadges([]);
+            });
     }, []);
 
     const handleBadgeGenerated = (imageUrl: string, name: string, category: string) => {
-        const newBadge: Badge = {
-            id: Date.now().toString(),
-            imageUrl,
-            timestamp: Date.now(),
-            name,
-            category,
-        };
-        const updated = [newBadge, ...previousBadges];
-        setPreviousBadges(updated);
+        // Refresh badges from server to get the correct ID
+        fetch("http://localhost:5000/get-badges")
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Server responded with status ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => setPreviousBadges(data))
+            .catch(err => {
+                console.error("Error while fetching badges:", err);
+                // If backend is not available, keep the current list
+            });
+    };
+
+    const handleDeleteBadge = async (badgeId: string) => {
+        if (!confirm("Are you sure you want to delete this badge?")) {
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:5000/delete-badge", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: badgeId }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setPreviousBadges(prev => prev.filter(badge => badge.id !== badgeId));
+            } else {
+                console.error("Error deleting badge:", data);
+                alert(`Error deleting badge: ${data.error || "Unknown error"}`);
+            }
+        } catch (error) {
+            console.error("Error deleting badge:", error);
+            alert(`Error deleting badge: ${error instanceof Error ? error.message : "Network error"}`);
+        }
     };
 
     return (
@@ -273,8 +312,17 @@ const Home = () => {
                                                 key={badge.id}
                                                 initial={{opacity: 0, scale: 0.9}}
                                                 animate={{opacity: 1, scale: 1}}
-                                                className="bg-card border-4 border-foreground rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow"
+                                                className="bg-card border-4 border-foreground rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow relative group"
                                             >
+                                                {/* Delete button */}
+                                                <button
+                                                    onClick={() => handleDeleteBadge(badge.id)}
+                                                    className="absolute top-2 right-2 bg-destructive text-destructive-foreground p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 z-20 shadow-lg border-2 border-foreground"
+                                                    title="Delete badge"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                                
                                                 <div className="relative w-full aspect-square overflow-hidden rounded-xl bg-muted">
                                                     <img
                                                         src={badge.imageUrl}

@@ -1,4 +1,75 @@
-# React + TypeScript + Vite
+# Secret Santa - Christmas Badge Generator 🎄
+
+A festive web application for generating Christmas badges with AI. Perfect for Secret Santa events!
+
+## Features
+
+- 🎅 Generate Christmas-themed badges with AI
+- 🎮 Mini-game while waiting for badge generation
+- 📸 Upload your photo and transform into Christmas characters
+- 🗑️ Manage and delete your generated badges
+- 🎨 Beautiful Christmas-themed UI
+
+## Prerequisites
+
+- Node.js and npm
+- Python 3.x
+- Flask and required Python packages (see backend requirements)
+
+## Setup
+
+1. Install frontend dependencies:
+```bash
+npm install
+```
+
+2. Install backend dependencies:
+```bash
+cd backend
+pip install flask flask-cors google-genai
+```
+
+## Running the Application
+
+### Option 1: Run separately
+
+**Terminal 1 - Backend:**
+```bash
+npm run backend
+```
+
+**Terminal 2 - Frontend:**
+```bash
+npm run dev
+```
+
+### Option 2: Run both together (requires concurrently)
+
+First install concurrently:
+```bash
+npm install --save-dev concurrently
+```
+
+Then run:
+```bash
+npm run dev:all
+```
+
+## Backend Server
+
+The backend server runs on `http://localhost:5000` and handles:
+- Badge generation via n8n webhook
+- Badge storage in `./badges/` directory
+- Badge retrieval and deletion
+
+## Frontend
+
+The frontend runs on `http://localhost:5173` (default Vite port) and provides:
+- User interface for badge generation
+- Badge gallery
+- Mini-game during generation
+
+---
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
