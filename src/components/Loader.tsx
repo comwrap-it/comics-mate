@@ -1,5 +1,5 @@
 import {motion} from "framer-motion";
-import {Sparkles} from "lucide-react";
+import {Snowflake, Gift} from "lucide-react";
 
 export const Loader = () => {
     return (
@@ -12,23 +12,31 @@ export const Loader = () => {
                 <motion.div
                     animate={{
                         rotate: 360,
+                        scale: [1, 1.1, 1],
                     }}
                     transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "linear",
+                        rotate: {
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "linear",
+                        },
+                        scale: {
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        },
                     }}
                     className="relative"
                 >
-                    <Sparkles className="w-24 h-24 text-primary"/>
+                    <Gift className="w-24 h-24 text-primary"/>
                 </motion.div>
 
                 <div className="text-center space-y-2">
                     <h3 className="text-2xl font-bold text-foreground">
-                        Generating...
+                        🎄 Creating your Christmas Badge... 🎄
                     </h3>
                     <p className="text-muted-foreground">
-                        AI is creating your custom badge!
+                        Santa's elves are working on your custom badge!
                     </p>
                 </div>
 
@@ -38,14 +46,17 @@ export const Loader = () => {
                             key={i}
                             animate={{
                                 y: [0, -20, 0],
+                                rotate: [0, 180, 360],
                             }}
                             transition={{
                                 duration: 0.6,
                                 repeat: Infinity,
                                 delay: i * 0.2,
                             }}
-                            className="w-4 h-4 bg-primary rounded-full border-2 border-foreground"
-                        />
+                            className="w-4 h-4"
+                        >
+                            <Snowflake className="w-full h-full text-primary"/>
+                        </motion.div>
                     ))}
                 </div>
             </motion.div>

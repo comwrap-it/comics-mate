@@ -1,5 +1,5 @@
 import {motion} from "framer-motion";
-import {Download, X} from "lucide-react";
+import {Download, X, Gift} from "lucide-react";
 import {Button} from "./ui/button";
 
 interface BadgePreviewProps {
@@ -11,7 +11,7 @@ export const BadgePreview = ({imageUrl, onClose}: BadgePreviewProps) => {
     const handleDownload = () => {
         const link = document.createElement("a");
         link.href = imageUrl;
-        link.download = "reply-comics-badge.png";
+        link.download = "secret-santa-christmas-badge.png";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -29,7 +29,10 @@ export const BadgePreview = ({imageUrl, onClose}: BadgePreviewProps) => {
                     {/* Header */}
                     <div
                         className="bg-primary text-primary-foreground p-6 border-b-4 border-foreground rounded-t-xl flex justify-between items-center">
-                        <h2 className="text-3xl font-bold uppercase">Your Badge!</h2>
+                        <div className="flex items-center gap-3">
+                            <Gift className="w-8 h-8"/>
+                            <h2 className="text-3xl font-bold uppercase">Your Christmas Badge! 🎄</h2>
+                        </div>
                         <button
                             onClick={onClose}
                             className="hover:scale-110 transition-transform"
@@ -77,10 +80,10 @@ export const BadgePreview = ({imageUrl, onClose}: BadgePreviewProps) => {
                         className="bg-success/10 border-t-4 border-foreground p-4 text-center"
                     >
                         <p className="text-success font-bold text-lg">
-                            ✅ Badge successfully generated!
+                            🎉 Christmas Badge successfully generated! 🎉
                         </p>
                         <p className="text-muted-foreground text-sm mt-1">
-                            You will receive your custom video by email.
+                            Perfect for your Secret Santa! You will receive your custom video by email.
                         </p>
                     </motion.div>
                 </motion.div>

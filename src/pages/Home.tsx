@@ -1,5 +1,5 @@
 import {motion} from "framer-motion";
-import {RefreshCcw, Zap} from "lucide-react";
+import {RefreshCcw, Gift, Snowflake, Star} from "lucide-react";
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {RegistrationForm} from "@/components/RegistrationForm";
@@ -40,9 +40,41 @@ const Home = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background flex justify-center gap-8">
-            <div className="flex w-full max-w-full px-24 h-screen overflow-hidden">
-                <div className="flex-[1.5] flex flex-col justify-center pr-8">
+        <div className="min-h-screen bg-background flex justify-center gap-8 relative overflow-hidden">
+            {/* Background Christmas decorations - subtle stars in corners */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                {/* Decorative stars in corners - subtle and elegant */}
+                {[
+                    {x: "5%", y: "10%", size: "w-8 h-8"},
+                    {x: "95%", y: "15%", size: "w-6 h-6"},
+                    {x: "8%", y: "85%", size: "w-7 h-7"},
+                    {x: "92%", y: "90%", size: "w-5 h-5"},
+                ].map((star, i) => (
+                    <motion.div
+                        key={`star-${i}`}
+                        className={`absolute text-accent/20 ${star.size}`}
+                        style={{
+                            left: star.x,
+                            top: star.y,
+                        }}
+                        animate={{
+                            opacity: [0.2, 0.4, 0.2],
+                            scale: [1, 1.1, 1],
+                            rotate: [0, 180, 360],
+                        }}
+                        transition={{
+                            duration: 4 + i,
+                            repeat: Infinity,
+                            delay: i * 0.5,
+                        }}
+                    >
+                        <Star className="w-full h-full" fill="currentColor" />
+                    </motion.div>
+                ))}
+            </div>
+            
+            <div className="flex w-full max-w-full px-24 h-screen overflow-hidden relative z-10">
+                <div className="flex-[1.5] flex flex-col justify-center pr-8 relative">
                     {/* Contenuto normale */}
                     {!showBadgeList && (<>
                         <ToastContainer
@@ -58,45 +90,65 @@ const Home = () => {
                             theme="light"
                         />
 
-                        <button
-                            onClick={() => setShowBadgeList(!showBadgeList)}
-                            className="absolute top-6 left-6 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg flex items-center gap-2 hover:scale-110 transition-transform"
-                        >
-                            <motion.div
-                                animate={{rotate: showBadgeList ? 180 : 0}}
-                                transition={{duration: 0.5}}
-                            >
-                                <RefreshCcw className="w-6 h-6"/>
-                            </motion.div>
-                            <span className="font-bold uppercase text-sm">
-                                    {showBadgeList ? "Hide badges" : "Show badges"}
-                                </span>
-                        </button>
-
                         {/* Header */}
                         <motion.div
                             initial={{opacity: 0, y: -30}}
                             animate={{opacity: 1, y: 0}}
                             transition={{duration: 0.6, type: "spring", bounce: 0.4}}
-                            className="text-center mb-12 max-w-4xl mx-auto"
+                            className="text-center mb-12 max-w-4xl mx-auto relative"
                         >
-                            <div className="inline-block mb-6">
+                            {/* Snowflakes decoration - falling from top, evenly distributed */}
+                            <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                                {[...Array(12)].map((_, i) => {
+                                    // Distribute snowflakes evenly across the width
+                                    const xPosition = (i * (100 / 12)) + (Math.random() * (100 / 12));
+                                    const delay = i * 0.3;
+                                    const duration = 8 + Math.random() * 4;
+                                    
+                                    return (
+                                        <motion.div
+                                            key={i}
+                                            className="absolute text-primary/15"
+                                            initial={{
+                                                x: `${xPosition}%`,
+                                                y: -30,
+                                                opacity: 0,
+                                            }}
+                                            animate={{
+                                                y: "110vh",
+                                                opacity: [0, 0.6, 0.6, 0],
+                                                rotate: 360,
+                                            }}
+                                            transition={{
+                                                duration: duration,
+                                                repeat: Infinity,
+                                                delay: delay,
+                                                ease: "linear",
+                                            }}
+                                        >
+                                            <Snowflake className="w-3 h-3" />
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+
+                            <div className="inline-block mb-6 relative z-10">
                                 <motion.div
                                     animate={{
-                                        rotate: [0, -5, 5, -5, 0],
+                                        rotate: [0, -3, 3, -3, 0],
                                     }}
                                     transition={{
-                                        duration: 0.5,
+                                        duration: 2,
                                         repeat: Infinity,
-                                        repeatDelay: 3,
+                                        repeatDelay: 2,
                                     }}
-                                    className="bg-primary text-primary-foreground px-8 py-4 border-4 border-foreground rounded-2xl inline-flex items-center gap-3"
+                                    className="bg-primary text-primary-foreground px-8 py-4 border-4 border-foreground rounded-2xl inline-flex items-center gap-3 shadow-lg"
                                 >
-                                    <Zap className="w-10 h-10" fill="currentColor"/>
+                                    <Gift className="w-10 h-10" fill="currentColor"/>
                                     <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
-                                        Reply Comics
+                                        Secret Santa
                                     </h1>
-                                    <Zap className="w-10 h-10" fill="currentColor"/>
+                                    <Gift className="w-10 h-10" fill="currentColor"/>
                                 </motion.div>
                             </div>
 
@@ -104,42 +156,66 @@ const Home = () => {
                                 initial={{opacity: 0, scale: 0.8}}
                                 animate={{opacity: 1, scale: 1}}
                                 transition={{delay: 0.2, duration: 0.5}}
-                                className="text-3xl md:text-4xl font-black text-foreground mb-4 uppercase"
+                                className="text-3xl md:text-4xl font-black text-foreground mb-4 uppercase relative z-10"
                             >
-                                Hero Badge Generator
+                                🎄 Christmas Badge Generator 🎄
                             </motion.h2>
 
                             <motion.p
                                 initial={{opacity: 0}}
                                 animate={{opacity: 1}}
                                 transition={{delay: 0.4}}
-                                className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
+                                className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto relative z-10"
                             >
-                                Become your favorite hero!
+                                Create your festive Christmas badge!
                             </motion.p>
                             <motion.p
                                 initial={{opacity: 0}}
                                 animate={{opacity: 1}}
                                 transition={{delay: 0.4}}
-                                className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
+                                className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto relative z-10"
                             >
-                                Upload your photo and create your own AI badge.
+                                Upload your photo and become a Christmas hero for your Secret Santa!
                             </motion.p>
 
-                            {/* Comic burst decoration */}
-                            <div className="mt-6 flex justify-center gap-4">
-                                {["POW!", "BANG!", "WOW!"].map((text, i) => (
+                            {/* Christmas decoration */}
+                            <div className="mt-6 flex justify-center gap-4 relative z-10">
+                                {["🎁", "⭐", "❄️"].map((emoji, i) => (
                                     <motion.div
-                                        key={text}
-                                        initial={{opacity: 0, scale: 0}}
-                                        animate={{opacity: 1, scale: 1}}
-                                        className="bg-accent text-foreground px-4 py-2 border-2 border-foreground rounded-lg font-black text-sm !rotate-3 !hover:rotate-6 !transition-transform"
+                                        key={emoji}
+                                        initial={{opacity: 0, scale: 0, rotate: -180}}
+                                        animate={{opacity: 1, scale: 1, rotate: 0}}
+                                        transition={{delay: 0.6 + i * 0.1, type: "spring", bounce: 0.6}}
+                                        className="bg-accent text-foreground px-4 py-2 border-2 border-foreground rounded-lg font-black text-xl"
                                         style={{transform: `rotate(${(i - 1) * 8}deg)`}}
                                     >
-                                        {text}
+                                        {emoji}
                                     </motion.div>
                                 ))}
                             </div>
+
+                            {/* Show Badges Button - positioned below decorations */}
+                            <motion.div
+                                initial={{opacity: 0, y: 10}}
+                                animate={{opacity: 1, y: 0}}
+                                transition={{delay: 0.8, duration: 0.5}}
+                                className="mt-6 flex justify-center relative z-10"
+                            >
+                                <button
+                                    onClick={() => setShowBadgeList(!showBadgeList)}
+                                    className="bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg flex items-center gap-2 hover:scale-110 transition-transform border-2 border-foreground"
+                                >
+                                    <motion.div
+                                        animate={{rotate: showBadgeList ? 180 : 0}}
+                                        transition={{duration: 0.5}}
+                                    >
+                                        <RefreshCcw className="w-6 h-6"/>
+                                    </motion.div>
+                                    <span className="font-bold uppercase text-sm">
+                                        {showBadgeList ? "Hide badges" : "Show badges"}
+                                    </span>
+                                </button>
+                            </motion.div>
                         </motion.div>
 
                         {/* Disclaimer */}
@@ -158,7 +234,7 @@ const Home = () => {
                         <div className="back-panel absolute inset-0 bg-background p-8 overflow-y-auto z-50">
                             <button
                                 onClick={() => setShowBadgeList(!showBadgeList)}
-                                className="absolute top-6 left-6 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg flex items-center gap-2 hover:scale-110 transition-transform"
+                                className="absolute top-6 left-6 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg flex items-center gap-2 hover:scale-110 transition-transform border-2 border-foreground z-20"
                             >
                                 <motion.div
                                     animate={{rotate: showBadgeList ? 180 : 0}}
@@ -170,7 +246,10 @@ const Home = () => {
                                     {showBadgeList ? "Hide badges" : "Show badges"}
                                 </span>
                             </button>
-                            <h2 className="text-2xl font-bold mb-4">I tuoi Badge</h2>
+                            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                                <Gift className="w-6 h-6 text-primary"/>
+                                I tuoi Badge Natalizi
+                            </h2>
                             <ul className="grid grid-cols-2 gap-4">
                                 {previousBadges.map(badge => (
                                     <li key={badge.id} className="border rounded-xl p-4">

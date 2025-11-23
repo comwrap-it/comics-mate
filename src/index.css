@@ -8,53 +8,53 @@ All colors MUST be HSL.
 
 @layer base {
     :root {
-        /* Comics Theme - Vibrant & Bold */
-        --background: 45 100% 97%;
-        --foreground: 240 10% 10%;
+        /* Christmas Theme - Festive & Warm */
+        --background: 0 0% 98%;
+        --foreground: 142 76% 20%;
 
         --card: 0 0% 100%;
-        --card-foreground: 240 10% 10%;
+        --card-foreground: 142 76% 20%;
 
         --popover: 0 0% 100%;
-        --popover-foreground: 240 10% 10%;
+        --popover-foreground: 142 76% 20%;
 
-        /* Comic Red - Primary hero color */
-        --primary: 0 84% 60%;
+        /* Christmas Red - Primary */
+        --primary: 0 84% 50%;
         --primary-foreground: 0 0% 100%;
 
-        /* Electric Blue - Secondary */
-        --secondary: 221 83% 53%;
+        /* Christmas Green - Secondary */
+        --secondary: 142 76% 36%;
         --secondary-foreground: 0 0% 100%;
 
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
+        --muted: 142 20% 95%;
+        --muted-foreground: 142 30% 40%;
 
-        /* Neon Yellow - Accent */
+        /* Gold - Accent */
         --accent: 43 96% 56%;
-        --accent-foreground: 240 10% 10%;
+        --accent-foreground: 142 76% 20%;
 
-        /* Neon Green - Success */
-        --success: 160 84% 39%;
+        /* Success Green */
+        --success: 142 76% 36%;
         --success-foreground: 0 0% 100%;
 
-        --destructive: 0 84.2% 60.2%;
+        --destructive: 0 84.2% 50%;
         --destructive-foreground: 0 0% 100%;
 
-        --border: 240 6% 90%;
-        --input: 240 6% 90%;
-        --ring: 0 84% 60%;
+        --border: 142 30% 85%;
+        --input: 142 30% 90%;
+        --ring: 0 84% 50%;
 
         --radius: 1rem;
 
-        /* Comic Gradients */
-        --gradient-hero: linear-gradient(135deg, hsl(0 84% 60%), hsl(340 82% 52%));
-        --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(45 100% 97%));
+        /* Christmas Gradients */
+        --gradient-hero: linear-gradient(135deg, hsl(0 84% 50%), hsl(142 76% 36%));
+        --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(142 20% 98%));
         --gradient-accent: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 92% 50%));
 
-        /* Comic Effects */
-        --shadow-comic: 6px 6px 0px hsl(240 10% 10%);
-        --shadow-comic-hover: 8px 8px 0px hsl(240 10% 10%);
-        --shadow-glow: 0 0 30px hsl(0 84% 60% / 0.3);
+        /* Christmas Effects */
+        --shadow-comic: 6px 6px 0px hsl(142 76% 20%);
+        --shadow-comic-hover: 8px 8px 0px hsl(142 76% 20%);
+        --shadow-glow: 0 0 30px hsl(0 84% 50% / 0.3);
 
         /* Transitions */
         --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -65,24 +65,24 @@ All colors MUST be HSL.
         }
 
         ::-webkit-scrollbar-track {
-            background: #fdf6e3; /* colore simile allo sfondo */
+            background: hsl(142 20% 98%); /* colore simile allo sfondo natalizio */
             border-radius: 8px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: hsl(240 5% 25%); /* grigio scuro fumetto */
+            background-color: hsl(142 76% 36%); /* verde natalizio */
             border-radius: 8px;
-            border: 3px solid #fdf6e3; /* effetto fumetto */
+            border: 3px solid hsl(142 20% 98%);
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background-color: hsl(240 5% 30%); /* hover più chiaro */
+            background-color: hsl(142 76% 30%); /* hover più scuro */
         }
 
         /* Per Firefox */
         * {
             scrollbar-width: thin;
-            scrollbar-color: hsl(240 5% 25%) #fdf6e3;
+            scrollbar-color: hsl(142 76% 36%) hsl(142 20% 98%);
         }
     }
 }
@@ -94,5 +94,11 @@ All colors MUST be HSL.
 
     body {
         @apply bg-background text-foreground;
+        /* Christmas pattern background */
+        background-image: 
+            radial-gradient(circle at 20% 50%, hsl(142 76% 36% / 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, hsl(0 84% 50% / 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 40% 20%, hsl(43 96% 56% / 0.05) 0%, transparent 50%);
+        background-size: 100% 100%;
     }
 }

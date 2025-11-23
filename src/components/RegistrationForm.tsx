@@ -1,7 +1,7 @@
 import {useForm} from "react-hook-form";
 import {useState} from "react";
 import {motion} from "framer-motion";
-import {Sparkles, Wand2} from "lucide-react";
+import {Sparkles, Wand2, Gift, Star} from "lucide-react";
 import {toast} from "react-toastify";
 import {Button} from "./ui/button";
 import {Input} from "./ui/input";
@@ -31,10 +31,22 @@ interface FormData {
 }
 
 const STYLES = [
-    {value: "superhero", label: "Superhero"},
-    {value: "anime", label: "Anime"},
-    {value: "cartoon", label: "Cartoon"},
-    {value: "dnd", label: "Dungeons & Dragons"},
+    {value: "santa", label: "🎅 Santa Claus"},
+    {value: "elf", label: "🧝 Christmas Elf"},
+    {value: "reindeer", label: "🦌 Reindeer"},
+    {value: "snowman", label: "⛄ Snowman"},
+    {value: "christmas", label: "🎄 Christmas Character"},
+];
+
+const CHARACTERS = [
+    {value: "santa_helper", label: "🎅 Santa's Helper"},
+    {value: "elf_worker", label: "🧝 Christmas Elf Worker"},
+    {value: "reindeer_rider", label: "🦌 Reindeer Rider"},
+    {value: "snowman_builder", label: "⛄ Snowman Builder"},
+    {value: "gift_deliverer", label: "🎁 Gift Deliverer"},
+    {value: "christmas_caroler", label: "🎵 Christmas Caroler"},
+    {value: "cookie_baker", label: "🍪 Cookie Baker"},
+    {value: "ornament_maker", label: "🎨 Ornament Maker"},
 ];
 
 const AI_MODELS = [
@@ -58,7 +70,8 @@ const QUALITY = [
 export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: RegistrationFormProps) => {
     const {register, handleSubmit, watch, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
-            style: "superhero",
+            style: "santa",
+            character: "santa_helper",
             ai_model: "gemini",
             dimensions: "square",
             quality: "medium",
@@ -71,7 +84,8 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
     const [category, setCategory] = useState<string>("");
     const [photoFile, setPhotoFile] = useState<File | null>(null);
 
-    const selectedStyle = watch("style");
+    const selectedStyle = watch("style") || "santa";
+    const selectedCharacter = watch("character") || "santa_helper";
     const selectedAiModel = watch("ai_model");
 
 
@@ -204,10 +218,11 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                                 Style <span className="text-primary">*</span>
                             </Label>
                             <Select
-                                value={selectedStyle}
+                                value={selectedStyle || "santa"}
                                 onValueChange={(value) => {
                                     setValue("style", value);
-                                    setValue("character", ""); // Reset character when style changes
+                                    // Reset character to default when style changes
+                                    setValue("character", "santa_helper");
                                 }}
                             >
                                 <SelectTrigger className="h-14 text-lg border-2 border-foreground bg-background">
@@ -225,15 +240,24 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
 
                         {/* Character */}
                         <div className="space-y-2">
-                            <Label htmlFor="character" className="text-lg font-bold">
+                            <Label className="text-lg font-bold">
                                 Character / Class <span className="text-primary">*</span>
                             </Label>
-                            <Textarea
-                                id="character"
-                                {...register("character")}
-                                placeholder="e.g. Superman, Spiderman, Flash, ..."
-                                className="min-h-8 !text-lg border-2 border-foreground resize-none"
-                            />
+                            <Select
+                                value={selectedCharacter || "santa_helper"}
+                                onValueChange={(value) => setValue("character", value)}
+                            >
+                                <SelectTrigger className="h-14 text-lg border-2 border-foreground bg-background">
+                                    <SelectValue/>
+                                </SelectTrigger>
+                                <SelectContent className="border-2 border-foreground bg-background">
+                                    {CHARACTERS.map((character) => (
+                                        <SelectItem key={character.value} value={character.value} className="text-lg">
+                                            {character.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                             {errors.character && (
                                 <p className="text-destructive text-sm font-semibold">{errors.character.message}</p>
                             )}
@@ -316,13 +340,13 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                         {/* Action Prompt */}
                         <div className="space-y-2">
                             <Label htmlFor="action_prompt" className="text-lg font-bold flex items-center gap-2">
-                                <Wand2 className="w-5 h-5 text-accent"/>
+                                <Star className="w-5 h-5 text-accent"/>
                                 Custom actions
                             </Label>
                             <Textarea
                                 id="action_prompt"
                                 {...register("action_prompt")}
-                                placeholder="e.g.: flying and landing with sight towards camera then show biceps"
+                                placeholder="e.g.: wearing a Santa hat, holding a gift, with Christmas lights in the background"
                                 className="min-h-32 text-lg border-2 border-foreground resize-none"
                             />
                         </div>
@@ -331,12 +355,12 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                         <div className="flex justify-center">
                             <Button
                                 type="submit"
-                                className="bg-accent text-foreground !px-12 !py-8 border-2 border-foreground rounded-lg font-black text-lg
-               flex items-center gap-3 transform transition-transform duration-300 hover:scale-105"
+                                className="bg-primary text-primary-foreground !px-12 !py-8 border-2 border-foreground rounded-lg font-black text-lg
+               flex items-center gap-3 transform transition-transform duration-300 hover:scale-105 shadow-lg"
                                 disabled={isLoading}
                             >
-                                <Sparkles className="!w-6 !h-6 !mt-1"/>
-                                Generate
+                                <Gift className="!w-6 !h-6 !mt-1"/>
+                                Generate Christmas Badge
                             </Button>
                         </div>
 

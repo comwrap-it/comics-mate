@@ -9,7 +9,7 @@ export const Disclaimer = () => {
                     <p className="font-semibold text-foreground mb-1">Privacy & Data</p>
                     <p>
                         The data will be used exclusively for badge generation and for sending the personalized video
-                        via email. No information will be stored after the Reply Comics event.
+                        via email. No information will be stored after the Secret Santa event.
                     </p>
                 </div>
             </div>
