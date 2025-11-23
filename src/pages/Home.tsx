@@ -231,37 +231,70 @@ const Home = () => {
 
                     {/* Contenuto lista badge */}
                     {showBadgeList && (
-                        <div className="back-panel absolute inset-0 bg-background p-8 overflow-y-auto z-50">
-                            <button
-                                onClick={() => setShowBadgeList(!showBadgeList)}
-                                className="absolute top-6 left-6 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg flex items-center gap-2 hover:scale-110 transition-transform border-2 border-foreground z-20"
-                            >
-                                <motion.div
-                                    animate={{rotate: showBadgeList ? 180 : 0}}
-                                    transition={{duration: 0.5}}
+                        <div className="absolute inset-0 bg-background overflow-y-auto z-50">
+                            {/* Header with button */}
+                            <div className="sticky top-0 bg-background border-b-4 border-foreground z-30 p-6 flex items-center justify-between shadow-lg">
+                                <h2 className="text-3xl font-black uppercase flex items-center gap-3">
+                                    <Gift className="w-8 h-8 text-primary"/>
+                                    Your Christmas Badges
+                                </h2>
+                                <button
+                                    onClick={() => setShowBadgeList(!showBadgeList)}
+                                    className="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg flex items-center gap-2 hover:scale-110 transition-transform border-2 border-foreground"
                                 >
-                                    <RefreshCcw className="w-6 h-6"/>
-                                </motion.div>
-                                <span className="font-bold uppercase text-sm">
-                                    {showBadgeList ? "Hide badges" : "Show badges"}
-                                </span>
-                            </button>
-                            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                                <Gift className="w-6 h-6 text-primary"/>
-                                I tuoi Badge Natalizi
-                            </h2>
-                            <ul className="grid grid-cols-2 gap-4">
-                                {previousBadges.map(badge => (
-                                    <li key={badge.id} className="border rounded-xl p-4">
-                                        <div className="w-full h-[1200px] overflow-hidden rounded">
-                                            <img src={badge.imageUrl} alt={badge.name}
-                                                 className="w-full h-full object-cover rounded"/>
-                                        </div>
-                                    </li>
-                                    ))}
-                            </ul>
+                                    <motion.div
+                                        animate={{rotate: showBadgeList ? 180 : 0}}
+                                        transition={{duration: 0.5}}
+                                    >
+                                        <RefreshCcw className="w-6 h-6"/>
+                                    </motion.div>
+                                    <span className="font-bold uppercase text-sm">
+                                        Hide Badges
+                                    </span>
+                                </button>
+                            </div>
+
+                            {/* Badge Grid */}
+                            <div className="p-8">
+                                {previousBadges.length === 0 ? (
+                                    <div className="text-center py-16">
+                                        <Gift className="w-16 h-16 text-primary mx-auto mb-4 opacity-50"/>
+                                        <p className="text-xl font-bold text-muted-foreground">
+                                            No badges generated yet
+                                        </p>
+                                        <p className="text-sm text-muted-foreground mt-2">
+                                            Create your first Christmas badge!
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+                                        {previousBadges.map(badge => (
+                                            <motion.li
+                                                key={badge.id}
+                                                initial={{opacity: 0, scale: 0.9}}
+                                                animate={{opacity: 1, scale: 1}}
+                                                className="bg-card border-4 border-foreground rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow"
+                                            >
+                                                <div className="relative w-full aspect-square overflow-hidden rounded-xl bg-muted">
+                                                    <img
+                                                        src={badge.imageUrl}
+                                                        alt={badge.name}
+                                                        className="w-full h-full object-contain rounded-xl"
+                                                    />
+                                                </div>
+                                                <div className="mt-4 text-center">
+                                                    <p className="font-bold text-lg text-foreground">{badge.name}</p>
+                                                    <p className="text-sm text-muted-foreground capitalize mt-1">
+                                                        {badge.category}
+                                                    </p>
+                                                </div>
+                                            </motion.li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
                         </div>
-                        )}
+                    )}
                 </div>
                 <div className="flex-[2] flex justify-center py-4 h-screen overflow-hidden">
                     {/* Form */}

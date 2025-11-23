@@ -177,7 +177,7 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                             </Label>
                             <Input
                                 id="name"
-                                {...register("name", {required: "Il nome è obbligatorio"})}
+                                {...register("name", {required: "Name is required"})}
                                 placeholder="Your name"
                                 className="h-14 text-lg border-2 border-foreground"
                             />
@@ -195,10 +195,10 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                                 id="email"
                                 type="email"
                                 {...register("email", {
-                                    required: "L'email è obbligatoria",
+                                    required: "Email is required",
                                     pattern: {
                                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                        message: "Email not valid",
+                                        message: "Email is not valid",
                                     },
                                 })}
                                 placeholder="youremail@email.com"
