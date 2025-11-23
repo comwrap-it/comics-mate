@@ -49,12 +49,33 @@ export const ChristmasGame = () => {
         return () => clearInterval(spawnInterval);
     }, [nextId]);
 
-    // Remove items that have fallen - wait for full animation
+    // Remove items that have fallen and apply penalty for bonus items
     useEffect(() => {
         const cleanupInterval = setInterval(() => {
             const now = Date.now();
-            setItems(prev => prev.filter(item => now - item.createdAt < FALL_DURATION + 500));
-        }, 200);
+            setItems(prev => {
+                const itemsToRemove: GameItem[] = [];
+                const remainingItems = prev.filter(item => {
+                    const age = now - item.createdAt;
+                    if (age >= FALL_DURATION) {
+                        // Item reached the ground
+                        itemsToRemove.push(item);
+                        return false; // Remove from items
+                    }
+                    return true;
+                });
+
+                // Apply penalty for bonus items that reached the ground
+                itemsToRemove.forEach(item => {
+                    if (item.points > 0) {
+                        // Bonus item reached ground - lose points
+                        setScore(currentScore => Math.max(0, currentScore - item.points));
+                    }
+                });
+
+                return remainingItems;
+            });
+        }, 100); // Check more frequently
 
         return () => clearInterval(cleanupInterval);
     }, []);
