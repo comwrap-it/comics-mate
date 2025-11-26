@@ -23,7 +23,6 @@ interface FormData {
     email: string;
     photo: string;
     style: string;
-    character: string;
     ai_model: string;
     dimensions?: string;
     quality?: string;
@@ -31,22 +30,18 @@ interface FormData {
 }
 
 const STYLES = [
-    {value: "santa", label: "🎅 Santa Claus"},
-    {value: "elf", label: "🧝 Christmas Elf"},
-    {value: "reindeer", label: "🦌 Reindeer"},
-    {value: "snowman", label: "⛄ Snowman"},
-    {value: "christmas", label: "🎄 Christmas Character"},
-];
-
-const CHARACTERS = [
-    {value: "santa_helper", label: "🎅 Santa's Helper"},
-    {value: "elf_worker", label: "🧝 Christmas Elf Worker"},
-    {value: "reindeer_rider", label: "🦌 Reindeer Rider"},
-    {value: "snowman_builder", label: "⛄ Snowman Builder"},
-    {value: "gift_deliverer", label: "🎁 Gift Deliverer"},
-    {value: "christmas_caroler", label: "🎵 Christmas Caroler"},
-    {value: "cookie_baker", label: "🍪 Cookie Baker"},
-    {value: "ornament_maker", label: "🎨 Ornament Maker"},
+    {value: "santa-helper", label: "🎅 Santa's Helper"},
+    {value: "grinch", label: "👹 Grinch"},
+    {value: "stranger-things", label: "🎬 Stranger Things Style"},
+    {value: "elf-worker", label: "🧝 Workshop Elf"},
+    {value: "reindeer-rider", label: "🦌 Reindeer Rider"},
+    {value: "snowman-builder", label: "⛄ Snowman Builder"},
+    {value: "gift-deliverer", label: "🎁 Gift Deliverer"},
+    {value: "christmas-angel", label: "👼 Christmas Angel"},
+    {value: "gingerbread-chef", label: "🍪 Gingerbread Chef"},
+    {value: "carol-singer", label: "🎵 Carol Singer"},
+    {value: "tree-decorator", label: "🎄 Tree Decorator"},
+    {value: "fireplace-keeper", label: "🔥 Fireplace Keeper"},
 ];
 
 const AI_MODELS = [
@@ -70,8 +65,7 @@ const QUALITY = [
 export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: RegistrationFormProps) => {
     const {register, handleSubmit, watch, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
-            style: "santa",
-            character: "santa_helper",
+            style: "santa-helper",
             ai_model: "gemini",
             dimensions: "square",
             quality: "medium",
@@ -84,8 +78,7 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
     const [category, setCategory] = useState<string>("");
     const [photoFile, setPhotoFile] = useState<File | null>(null);
 
-    const selectedStyle = watch("style") || "santa";
-    const selectedCharacter = watch("character") || "santa_helper";
+    const selectedStyle = watch("style");
     const selectedAiModel = watch("ai_model");
 
 
@@ -103,7 +96,7 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
             formData.append("name", data.name);
             formData.append("email", data.email);
             formData.append("type", data.style);
-            formData.append("class", data.character);
+            formData.append("class", data.style); // Use style as class since they're unified
             const dimensionObj = DIMENSIONS.find(d => d.value === data.dimensions);
             formData.append("size", dimensionObj?.val || "1024x1024");
             formData.append("quality", data.quality);
@@ -177,7 +170,7 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                             </Label>
                             <Input
                                 id="name"
-                                {...register("name", {required: "Name is required"})}
+                                {...register("name", {required: "Il nome è obbligatorio"})}
                                 placeholder="Your name"
                                 className="h-14 text-lg border-2 border-foreground"
                             />
@@ -195,10 +188,10 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                                 id="email"
                                 type="email"
                                 {...register("email", {
-                                    required: "Email is required",
+                                    required: "L'email è obbligatoria",
                                     pattern: {
                                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                        message: "Email is not valid",
+                                        message: "Email not valid",
                                     },
                                 })}
                                 placeholder="youremail@email.com"
@@ -218,11 +211,9 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                                 Style <span className="text-primary">*</span>
                             </Label>
                             <Select
-                                value={selectedStyle || "santa"}
+                                value={selectedStyle}
                                 onValueChange={(value) => {
                                     setValue("style", value);
-                                    // Reset character to default when style changes
-                                    setValue("character", "santa_helper");
                                 }}
                             >
                                 <SelectTrigger className="h-14 text-lg border-2 border-foreground bg-background">
@@ -236,31 +227,6 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                                     ))}
                                 </SelectContent>
                             </Select>
-                        </div>
-
-                        {/* Character */}
-                        <div className="space-y-2">
-                            <Label className="text-lg font-bold">
-                                Character / Class <span className="text-primary">*</span>
-                            </Label>
-                            <Select
-                                value={selectedCharacter || "santa_helper"}
-                                onValueChange={(value) => setValue("character", value)}
-                            >
-                                <SelectTrigger className="h-14 text-lg border-2 border-foreground bg-background">
-                                    <SelectValue/>
-                                </SelectTrigger>
-                                <SelectContent className="border-2 border-foreground bg-background">
-                                    {CHARACTERS.map((character) => (
-                                        <SelectItem key={character.value} value={character.value} className="text-lg">
-                                            {character.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.character && (
-                                <p className="text-destructive text-sm font-semibold">{errors.character.message}</p>
-                            )}
                         </div>
 
                         {/* AI Model */}
