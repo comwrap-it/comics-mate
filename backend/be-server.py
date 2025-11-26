@@ -27,6 +27,10 @@ def get_badges():
 
         if os.path.isdir(category_path):
             for img_name in os.listdir(category_path):
+                # Skip JSON files and only process image files
+                if img_name.lower().endswith((".json",)):
+                    continue
+                    
                 if img_name.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
                     img_url = f"http://localhost:5000/static/{category}/{img_name}"
                     

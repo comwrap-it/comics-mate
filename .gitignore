@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 /deploy
+
+# Badges directory - user generated content
+badges/
