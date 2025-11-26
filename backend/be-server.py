@@ -1,66 +1,14 @@
 import base64
+import json
 import os
 import random
-import tempfile
 import time
-from datetime import datetime
 
-from flask import Flask, request, send_file, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from google.genai import Client
-from google.genai.types import Image
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
-client = Client()
-
-
-@app.route('/generate-video', methods=['POST'])
-def generate_video():
-    prompt = request.form.get('prompt')
-    image_file = request.files.get('image')
-    image_base64 = request.form.get('image_base64')
-
-    if not prompt:
-        return jsonify({'error': 'Prompt is required'}), 400
-
-    if not image_file and not image_base64:
-        return jsonify({'error': 'Image is required (either as file or base64)'}), 400
-
-    try:
-        if image_file:
-            image_bytes = image_file.read()
-        else:
-            image_bytes = base64.b64decode(image_base64)
-
-        print("Start generating video")
-        image_obj = Image(image_bytes=image_bytes, mime_type="image/png")
-        operation = client.models.generate_videos(
-            model="veo-3.1-generate-preview",
-            prompt=prompt,
-            image=image_obj,
-        )
-
-        while not operation.done:
-            print("Waiting for video generation to complete...")
-            time.sleep(10)
-            operation = client.operations.get(operation)
-
-        print("Video generated")
-
-        video = operation.response.generated_videos[0]
-        client.files.download(file=video.video)
-
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"veo3_{timestamp}.mp4"
-        temp_video_path = os.path.join(tempfile.gettempdir(), filename)
-
-        video.video.save(temp_video_path)
-
-        return send_file(temp_video_path, as_attachment=True)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 
 # Use a folder in the project directory
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "badges")
@@ -81,9 +29,22 @@ def get_badges():
             for img_name in os.listdir(category_path):
                 if img_name.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
                     img_url = f"http://localhost:5000/static/{category}/{img_name}"
+                    
+                    # Try to load metadata JSON file
+                    metadata_file = os.path.join(category_path, f"{img_name}.json")
+                    user_name = img_name  # Default to filename
+                    
+                    if os.path.exists(metadata_file):
+                        try:
+                            with open(metadata_file, "r", encoding="utf-8") as f:
+                                metadata = json.load(f)
+                                user_name = metadata.get("userName", img_name)
+                        except:
+                            pass
+                    
                     badges.append({
                         "id": f"{category}_{img_name}",
-                        "name": img_name,
+                        "name": user_name,
                         "category": category,
                         "imageUrl": img_url
                     })
@@ -98,6 +59,7 @@ def save_badge():
     data = request.get_json()
     image_base64 = data.get("image")
     category = data.get("category")
+    user_name = data.get("userName", "Unknown")
 
     if not image_base64 or not category:
         return jsonify({"error": "Missing image or category"}), 400
@@ -115,8 +77,14 @@ def save_badge():
     filename = f"badge_{timestamp}.png"
     file_path = os.path.join(category_path, filename)
 
+    # Save image
     with open(file_path, "wb") as f:
         f.write(image_data)
+
+    # Save metadata JSON file with user name
+    metadata_file = os.path.join(category_path, f"{filename}.json")
+    with open(metadata_file, "w", encoding="utf-8") as f:
+        json.dump({"userName": user_name, "timestamp": timestamp}, f, ensure_ascii=False)
 
     return jsonify({"message": "Badge saved", "file": filename})
 
@@ -152,7 +120,8 @@ def delete_badge():
         if ".." in category or ".." in filename or "/" in category or "\\" in category:
             return jsonify({"error": "Invalid path"}), 400
         
-        file_path = os.path.join(BASE_DIR, category, filename)
+        category_path = os.path.join(BASE_DIR, category)
+        file_path = os.path.join(category_path, filename)
         
         # Verify the file exists and is within BASE_DIR
         if not os.path.exists(file_path):
@@ -164,7 +133,13 @@ def delete_badge():
         if not real_path.startswith(real_base):
             return jsonify({"error": "Invalid path"}), 400
         
+        # Remove the image file
         os.remove(file_path)
+        
+        # Also remove the metadata JSON file if it exists
+        metadata_file = os.path.join(category_path, f"{filename}.json")
+        if os.path.exists(metadata_file):
+            os.remove(metadata_file)
         
         return jsonify({"message": "Badge deleted successfully"})
     except Exception as e:

@@ -130,12 +130,15 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                 reader.readAsDataURL(blob);
             });
 
+            // Get the name from the form data
+            const formData = watch();
             fetch("http://localhost:5000/save-badge", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     image: base64,
                     category: category,
+                    userName: formData.name || "Unknown",
                 })
             })
                 .then(res => res.json())
@@ -150,7 +153,12 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
         <>
             {isLoading && <Loader/>}
             {generatedImage && (
-                <BadgePreview imageUrl={generatedImage} onClose={handleClosePreview}/>
+                <BadgePreview 
+                    imageUrl={generatedImage} 
+                    onClose={handleClosePreview}
+                    badgeName={watch("name")}
+                    showSuccessMessage={true}
+                />
             )}
 
 

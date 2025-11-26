@@ -5,13 +5,18 @@ import {Button} from "./ui/button";
 interface BadgePreviewProps {
     imageUrl: string;
     onClose: () => void;
+    badgeName?: string;
+    showSuccessMessage?: boolean;
 }
 
-export const BadgePreview = ({imageUrl, onClose}: BadgePreviewProps) => {
+export const BadgePreview = ({imageUrl, onClose, badgeName, showSuccessMessage = true}: BadgePreviewProps) => {
     const handleDownload = () => {
         const link = document.createElement("a");
         link.href = imageUrl;
-        link.download = "secret-santa-christmas-badge.png";
+        // Extract filename from URL if it's a full URL, otherwise use default
+        const urlParts = imageUrl.split("/");
+        const filename = urlParts.length > 0 ? urlParts[urlParts.length - 1] : "secret-santa-christmas-badge.png";
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -31,7 +36,9 @@ export const BadgePreview = ({imageUrl, onClose}: BadgePreviewProps) => {
                         className="bg-primary text-primary-foreground p-6 border-b-4 border-foreground rounded-t-xl flex justify-between items-center">
                         <div className="flex items-center gap-3">
                             <Gift className="w-8 h-8"/>
-                            <h2 className="text-3xl font-bold uppercase">Your Christmas Badge! 🎄</h2>
+                            <h2 className="text-3xl font-bold uppercase">
+                                {badgeName ? `${badgeName}'s Badge 🎄` : "Your Christmas Badge! 🎄"}
+                            </h2>
                         </div>
                         <button
                             onClick={onClose}
@@ -72,20 +79,22 @@ export const BadgePreview = ({imageUrl, onClose}: BadgePreviewProps) => {
                         </Button>
                     </div>
 
-                    {/* Success Message */}
-                    <motion.div
-                        initial={{opacity: 0}}
-                        animate={{opacity: 1}}
-                        transition={{delay: 0.4}}
-                        className="bg-success/10 border-t-4 border-foreground p-4 text-center"
-                    >
-                        <p className="text-success font-bold text-lg">
-                            🎉 Christmas Badge successfully generated! 🎉
-                        </p>
-                        <p className="text-muted-foreground text-sm mt-1">
-                            Perfect for your Secret Santa! You will receive your custom video by email.
-                        </p>
-                    </motion.div>
+                    {/* Success Message - only show for newly generated badges */}
+                    {showSuccessMessage && (
+                        <motion.div
+                            initial={{opacity: 0}}
+                            animate={{opacity: 1}}
+                            transition={{delay: 0.4}}
+                            className="bg-success/10 border-t-4 border-foreground p-4 text-center"
+                        >
+                            <p className="text-success font-bold text-lg">
+                                🎉 Christmas Badge successfully generated! 🎉
+                            </p>
+                            <p className="text-muted-foreground text-sm mt-1">
+                                Perfect for your Secret Santa! You will receive your custom video by email.
+                            </p>
+                        </motion.div>
+                    )}
                 </motion.div>
             </div>
         </div>

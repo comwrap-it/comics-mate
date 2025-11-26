@@ -20,7 +20,7 @@ const Home = () => {
     const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
     const [showBadgeList, setShowBadgeList] = useState(false);
 
-    useEffect(() => {
+    const fetchBadges = () => {
         fetch("http://localhost:5000/get-badges")
             .then(res => {
                 if (!res.ok) {
@@ -34,7 +34,18 @@ const Home = () => {
                 // Backend might not be running, show empty list
                 setPreviousBadges([]);
             });
+    };
+
+    useEffect(() => {
+        fetchBadges();
     }, []);
+
+    // Fetch badges when showBadgeList becomes true
+    useEffect(() => {
+        if (showBadgeList) {
+            fetchBadges();
+        }
+    }, [showBadgeList]);
 
     const handleBadgeGenerated = (imageUrl: string, name: string, category: string) => {
         // Refresh badges from server to get the correct ID
@@ -323,7 +334,10 @@ const Home = () => {
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                                 
-                                                <div className="relative w-full aspect-square overflow-hidden rounded-xl bg-muted">
+                                                <div 
+                                                    className="relative w-full aspect-square overflow-hidden rounded-xl bg-muted cursor-pointer hover:opacity-90 transition-opacity"
+                                                    onClick={() => setSelectedBadge(badge)}
+                                                >
                                                     <img
                                                         src={badge.imageUrl}
                                                         alt={badge.name}
@@ -353,6 +367,8 @@ const Home = () => {
                         <BadgePreview
                             imageUrl={selectedBadge.imageUrl}
                             onClose={() => setSelectedBadge(null)}
+                            badgeName={selectedBadge.name}
+                            showSuccessMessage={false}
                         />
                     )}
                 </div>
