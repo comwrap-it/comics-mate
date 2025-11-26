@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "check": "tsc --noEmit",
     "backend": "cd backend && python be-server.py",
-    "dev:all": "concurrently \"npm run backend\" \"npm run dev\""
+    "wall": "cd backend && python wall-server.py",
+    "dev:all": "concurrently \"npm run backend\" \"npm run wall\" \"npm run dev\""
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",
