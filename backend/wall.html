@@ -331,7 +331,11 @@
     <script>
         const API_URL = 'http://localhost:5000/get-badges';
         let currentBadges = [];
+        let allBadges = [];
         let refreshInterval;
+        let rotationInterval;
+        let currentRotationIndex = 0;
+        const ROTATION_INTERVAL = 8000; // Change badges every 8 seconds
 
         // Create snowflakes
         function createSnowflakes() {
@@ -412,11 +416,26 @@
             return Math.max(1, cardsPerRow); // At least 1 card
         }
 
-        // Render badges
-        function renderBadges(badges) {
+        // Get a random subset of badges to display
+        function getRandomBadgeSubset(badges, count) {
+            if (badges.length <= count) {
+                // If we have fewer badges than can fit, just shuffle and return all
+                return [...badges].sort(() => Math.random() - 0.5);
+            }
+            
+            // Shuffle all badges and select a random subset
+            const shuffled = [...badges].sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, count);
+        }
+
+        // Render badges (can accept specific badges to show, or use allBadges)
+        function renderBadges(badgesToRender = null) {
             const container = document.getElementById('badge-container');
             const loading = document.getElementById('loading');
             const emptyState = document.getElementById('empty-state');
+
+            // Use provided badges or fall back to allBadges
+            const badges = badgesToRender || allBadges;
 
             if (badges.length === 0) {
                 loading.style.display = 'none';
@@ -429,23 +448,12 @@
             emptyState.style.display = 'none';
             container.style.display = 'flex';
 
-            // Check if badges have changed
-            const badgesChanged = JSON.stringify(badges) !== JSON.stringify(currentBadges);
-            if (!badgesChanged && container.innerHTML) {
-                return; // No need to re-render
-            }
-
-            currentBadges = badges;
-
             // Calculate how many cards can fit
             const cardsPerRow = calculateCardsPerRow();
             const maxCards = cardsPerRow * 2; // Maximum 2 rows
 
-            // Shuffle badges for random distribution
-            const shuffledBadges = [...badges].sort(() => Math.random() - 0.5);
-            
-            // Select only the cards that fit on screen
-            const badgesToShow = shuffledBadges.slice(0, maxCards);
+            // Get random subset of badges to display
+            const badgesToShow = getRandomBadgeSubset(badges, maxCards);
 
             // Create grid container
             const grid = document.createElement('div');
@@ -517,10 +525,55 @@
             return div.innerHTML;
         }
 
-        // Update badges
+        // Rotate badges to show different ones
+        function rotateBadges() {
+            if (allBadges.length === 0) return;
+            
+            // Calculate how many cards can fit
+            const cardsPerRow = calculateCardsPerRow();
+            const maxCards = cardsPerRow * 2;
+            
+            // If we have more badges than can fit, rotate them
+            if (allBadges.length > maxCards) {
+                // Get a new random subset
+                const badgesToShow = getRandomBadgeSubset(allBadges, maxCards);
+                renderBadges(badgesToShow);
+            } else {
+                // If all badges fit, just re-shuffle them for variety
+                const shuffled = [...allBadges].sort(() => Math.random() - 0.5);
+                renderBadges(shuffled);
+            }
+        }
+
+        // Update badges from API
         async function updateBadges() {
             const badges = await fetchBadges();
-            renderBadges(badges);
+            
+            // Check if badges list has changed
+            const badgesChanged = JSON.stringify(badges) !== JSON.stringify(allBadges);
+            
+            if (badgesChanged) {
+                allBadges = badges;
+                // Reset rotation when badges change
+                currentRotationIndex = 0;
+                
+                // Stop existing rotation
+                if (rotationInterval) {
+                    clearInterval(rotationInterval);
+                }
+                
+                // Start rotation if we have more badges than can fit
+                const cardsPerRow = calculateCardsPerRow();
+                const maxCards = cardsPerRow * 2;
+                
+                if (allBadges.length > maxCards) {
+                    // Start rotation to show all badges
+                    rotationInterval = setInterval(rotateBadges, ROTATION_INTERVAL);
+                }
+            }
+            
+            // Render current badges
+            rotateBadges();
         }
 
         // Debounce function for resize
@@ -538,8 +591,23 @@
 
         // Handle window resize
         const handleResize = debounce(() => {
-            if (currentBadges.length > 0) {
-                renderBadges(currentBadges);
+            if (allBadges.length > 0) {
+                // Recalculate and restart rotation if needed
+                const cardsPerRow = calculateCardsPerRow();
+                const maxCards = cardsPerRow * 2;
+                
+                // Stop existing rotation
+                if (rotationInterval) {
+                    clearInterval(rotationInterval);
+                }
+                
+                // Restart rotation if we have more badges than can fit
+                if (allBadges.length > maxCards) {
+                    rotationInterval = setInterval(rotateBadges, ROTATION_INTERVAL);
+                }
+                
+                // Re-render with current badges
+                rotateBadges();
             }
         }, 250);
 
@@ -548,7 +616,7 @@
             createSnowflakes();
             await updateBadges();
             
-            // Auto-refresh every 5 seconds
+            // Auto-refresh every 5 seconds to check for new badges
             refreshInterval = setInterval(updateBadges, 5000);
             
             // Listen for window resize
@@ -562,6 +630,9 @@
         window.addEventListener('beforeunload', () => {
             if (refreshInterval) {
                 clearInterval(refreshInterval);
+            }
+            if (rotationInterval) {
+                clearInterval(rotationInterval);
             }
             window.removeEventListener('resize', handleResize);
         });
