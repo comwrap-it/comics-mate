@@ -100,6 +100,29 @@
             cursor: not-allowed;
         }
 
+        .view-toggle-button {
+            background: hsl(217 91% 60%);
+            color: white;
+            border: 4px solid white;
+            padding: 0.75rem 2rem;
+            font-size: 1.25rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0px white;
+        }
+
+        .view-toggle-button:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px white;
+        }
+
+        .view-toggle-button.active {
+            background: hsl(0 84% 50%);
+        }
+
         /* Badge wall container */
         .wall-container {
             position: absolute;
@@ -114,6 +137,11 @@
             align-items: center;
             justify-content: center;
             gap: 1rem;
+        }
+
+        /* Video container specific styles */
+        .wall-container #video-container {
+            padding: 0.75rem;
         }
 
         .badge-grid {
@@ -536,6 +564,94 @@
             text-transform: uppercase;
             letter-spacing: 4px;
         }
+
+        /* Video view styles */
+        .video-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .video-container.show {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 0.75rem;
+            justify-items: center;
+            align-items: start;
+            max-width: 100%;
+            padding: 0.75rem;
+            height: calc(100vh - 100px - 1.5rem);
+            overflow-y: auto;
+        }
+
+        .video-item {
+            background: white;
+            border: 3px solid hsl(142 76% 20%);
+            border-radius: 0.75rem;
+            padding: 0;
+            box-shadow: 4px 4px 0px hsl(142 76% 20%);
+            width: 100%;
+            height: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .video-item:hover {
+            transform: scale(1.05);
+            box-shadow: 10px 10px 0px hsl(142 76% 20%);
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            background: #000;
+            border-radius: 0.75rem 0.75rem 0 0;
+            overflow: hidden;
+        }
+
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .video-name {
+            padding: 0.5rem 0.75rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 800;
+            color: hsl(142 76% 20%);
+            border-top: 2px solid hsl(142 76% 20%);
+            line-height: 1.2;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -545,7 +661,10 @@
     <!-- Header -->
     <div class="header">
         <h1>🎄 Secret Santa Badge Wall 🎄</h1>
-        <button class="draw-button" id="draw-button">🎲 Start Draw</button>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <button class="view-toggle-button" id="view-toggle-button" data-view="cards">📸 Cards View</button>
+            <button class="draw-button" id="draw-button">🎲 Start Draw</button>
+        </div>
     </div>
 
     <!-- Wall Container -->
@@ -559,6 +678,7 @@
             <p>Badges will appear here as they are created...</p>
         </div>
         <div id="badge-container" style="display: none;"></div>
+        <div id="video-container" class="video-container"></div>
     </div>
 
     <!-- Podium Overlay -->
@@ -570,12 +690,18 @@
 
     <script>
         const API_URL = 'http://localhost:5000/get-badges';
+        const VIDEOS_API_URL = 'https://comwrap25.app.n8n.cloud/webhook/get-videos';
         let currentBadges = [];
         let allBadges = [];
-        let refreshInterval;
-        let rotationInterval;
+        let allVideos = []; // Array of {url: string, nome: string}
+        let currentView = 'cards'; // 'cards' or 'videos'
+        let refreshInterval = null;
+        let rotationInterval = null;
         let currentRotationIndex = 0;
+        let isVideoViewActive = false; // Flag to completely block badge operations
+        let videoRotationInterval = null; // For rotating videos
         const ROTATION_INTERVAL = 8000; // Change badges every 8 seconds
+        const VIDEO_ROTATION_INTERVAL = 10000; // Change videos every 10 seconds
 
         // Create snowflakes
         function createSnowflakes() {
@@ -670,9 +796,20 @@
 
         // Render badges (can accept specific badges to show, or use allBadges)
         function renderBadges(badgesToRender = null) {
+            // Don't render badges if we're in video view - strict check
+            if (currentView !== 'cards' || isVideoViewActive) {
+                return;
+            }
+
             const container = document.getElementById('badge-container');
             const loading = document.getElementById('loading');
             const emptyState = document.getElementById('empty-state');
+            
+            // Additional safety check - ensure video container is not visible
+            const videoContainer = document.getElementById('video-container');
+            if (videoContainer && videoContainer.classList.contains('show')) {
+                return;
+            }
 
             // Use provided badges or fall back to allBadges
             const badges = badgesToRender || allBadges;
@@ -684,6 +821,11 @@
                 return;
             }
 
+            // Final safety check before rendering
+            if (currentView === 'videos' || isVideoViewActive) {
+                return;
+            }
+            
             loading.style.display = 'none';
             emptyState.style.display = 'none';
             container.style.display = 'flex';
@@ -768,6 +910,11 @@
 
         // Rotate badges to show different ones
         function rotateBadges() {
+            // Don't rotate if we're in video view
+            if (currentView === 'videos' || isVideoViewActive) {
+                return;
+            }
+
             if (allBadges.length === 0) return;
             
             // Calculate how many cards can fit
@@ -788,7 +935,17 @@
 
         // Update badges from API
         async function updateBadges() {
+            // Don't update badges if we're in video view - check at the very start
+            if (currentView === 'videos' || isVideoViewActive) {
+                return;
+            }
+
             const badges = await fetchBadges();
+            
+            // Double check after async operation - view might have changed during fetch
+            if (currentView === 'videos' || isVideoViewActive) {
+                return;
+            }
             
             // Check if badges list has changed
             const badgesChanged = JSON.stringify(badges) !== JSON.stringify(allBadges);
@@ -813,8 +970,10 @@
                 }
             }
             
-            // Render current badges
-            rotateBadges();
+            // Render current badges only if in cards view
+            if (currentView === 'cards' && !isVideoViewActive) {
+                rotateBadges();
+            }
         }
 
         // Debounce function for resize
@@ -832,6 +991,11 @@
 
         // Handle window resize
         const handleResize = debounce(() => {
+            // Don't handle resize if we're in video view
+            if (currentView === 'videos' || isVideoViewActive) {
+                return;
+            }
+            
             if (allBadges.length > 0) {
                 // Recalculate and restart rotation if needed
                 const cardsPerRow = calculateCardsPerRow();
@@ -1047,6 +1211,254 @@
             }
         });
 
+        // View toggle functionality
+        const viewToggleButton = document.getElementById('view-toggle-button');
+        const badgeContainer = document.getElementById('badge-container');
+        const videoContainer = document.getElementById('video-container');
+        
+        viewToggleButton.addEventListener('click', () => {
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (currentView === 'cards') {
+                // Switch to videos view - set flags FIRST to prevent any badge updates
+                isVideoViewActive = true;
+                currentView = 'videos';
+                
+                // Stop badge-related intervals IMMEDIATELY and clear them
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                    refreshInterval = null;
+                }
+                if (rotationInterval) {
+                    clearInterval(rotationInterval);
+                    rotationInterval = null;
+                }
+                // Video rotation will be started in loadVideos if needed
+                
+                // Update UI
+                viewToggleButton.textContent = '📸 Cards View';
+                viewToggleButton.classList.add('active');
+                
+                // Hide badge-related elements
+                if (loading) loading.style.display = 'none';
+                if (emptyState) emptyState.style.display = 'none';
+                if (badgeContainer) badgeContainer.style.display = 'none';
+                
+                // Show video container
+                videoContainer.classList.add('show');
+                
+                // Load videos
+                loadVideos();
+            } else {
+                // Switch to cards view - clear video flag FIRST
+                isVideoViewActive = false;
+                currentView = 'cards';
+                
+                // Hide video container
+                videoContainer.classList.remove('show');
+                
+                // Stop video rotation
+                if (videoRotationInterval) {
+                    clearInterval(videoRotationInterval);
+                    videoRotationInterval = null;
+                }
+                
+                // Update UI
+                viewToggleButton.textContent = '🎥 Videos View';
+                viewToggleButton.classList.remove('active');
+                
+                // Restart badge-related intervals
+                if (!refreshInterval) {
+                    refreshInterval = setInterval(updateBadges, 5000);
+                }
+                
+                // Restart rotation if needed
+                const cardsPerRow = calculateCardsPerRow();
+                const maxCards = cardsPerRow * 2;
+                if (allBadges.length > maxCards && !rotationInterval) {
+                    rotationInterval = setInterval(rotateBadges, ROTATION_INTERVAL);
+                }
+                
+                // Show badge container
+                if (allBadges.length > 0) {
+                    badgeContainer.style.display = 'flex';
+                } else {
+                    emptyState.style.display = 'block';
+                }
+                
+                // Re-render badges
+                rotateBadges();
+            }
+        });
+
+        // Load videos from API
+        async function loadVideos() {
+            try {
+                const response = await fetch(VIDEOS_API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Parse the response structure
+                // Expected: [{ video_link: [{ Video: "url", Nome: "name" }, ...] }]
+                let videos = [];
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    const firstItem = data[0];
+                    if (firstItem.video_link && Array.isArray(firstItem.video_link)) {
+                        videos = firstItem.video_link
+                            .map(item => ({
+                                url: item.Video || '',
+                                nome: item.Nome || 'Unknown'
+                            }))
+                            .filter(video => video.url && video.url.trim() !== '');
+                    }
+                }
+
+                allVideos = videos;
+                
+                // Show random subset of 9 videos
+                const videosToShow = getRandomVideoSubset(videos);
+                renderVideos(videosToShow);
+                
+                // Start rotation if we have more than 9 videos
+                if (videos.length > 9) {
+                    if (videoRotationInterval) {
+                        clearInterval(videoRotationInterval);
+                    }
+                    videoRotationInterval = setInterval(() => {
+                        if (currentView === 'videos' && isVideoViewActive) {
+                            const newVideosToShow = getRandomVideoSubset(allVideos);
+                            renderVideos(newVideosToShow);
+                        }
+                    }, VIDEO_ROTATION_INTERVAL);
+                }
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                videoContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; color: hsl(142 30% 40%);">
+                        <h2>❌ Error loading videos</h2>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Get a random subset of videos to display (always 9 videos max)
+        function getRandomVideoSubset(videos) {
+            const MAX_VIDEOS = 9; // Always show maximum 9 videos (3x3 grid)
+            
+            if (videos.length <= MAX_VIDEOS) {
+                // If we have fewer videos than max, just shuffle and return all
+                return [...videos].sort(() => Math.random() - 0.5);
+            }
+            
+            // Shuffle all videos and select a random subset of 9
+            const shuffled = [...videos].sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, MAX_VIDEOS);
+        }
+
+        // Render videos in grid
+        function renderVideos(videos) {
+            // Ensure we're still in video view before rendering
+            if (currentView !== 'videos' || !isVideoViewActive) {
+                return;
+            }
+
+            // Ensure video container is visible and badge container is hidden
+            const badgeContainer = document.getElementById('badge-container');
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+            
+            // Force hide all badge-related elements
+            if (loading) loading.style.display = 'none';
+            if (emptyState) emptyState.style.display = 'none';
+            if (badgeContainer) badgeContainer.style.display = 'none';
+            
+            // Ensure video container is visible
+            videoContainer.classList.add('show');
+
+            if (!videos || videos.length === 0) {
+                videoContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; color: hsl(142 30% 40%); padding: 4rem;">
+                        <h2 style="font-size: 2rem; margin-bottom: 1rem;">🎥 No videos available</h2>
+                        <p style="font-size: 1.2rem;">Videos will appear here when available...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            videoContainer.innerHTML = '';
+
+            videos.forEach((video, index) => {
+                // Skip empty URLs
+                if (!video || !video.url || video.url.trim() === '') {
+                    return;
+                }
+
+                const videoItem = document.createElement('div');
+                videoItem.className = 'video-item';
+                
+                // Create video element with autoplay in thumbnail mode
+                videoItem.innerHTML = `
+                    <div class="video-wrapper">
+                        <video 
+                            src="${escapeHtml(video.url)}" 
+                            autoplay 
+                            muted 
+                            loop
+                            playsinline
+                            preload="auto"
+                        ></video>
+                        <div class="video-loading">Loading video...</div>
+                    </div>
+                    <div class="video-name">${escapeHtml(video.nome)}</div>
+                `;
+
+                videoContainer.appendChild(videoItem);
+
+                // Handle video load
+                const videoElement = videoItem.querySelector('video');
+                const loadingDiv = videoItem.querySelector('.video-loading');
+                
+                if (videoElement) {
+                    videoElement.addEventListener('loadeddata', () => {
+                        // Video loaded successfully
+                        if (loadingDiv) {
+                            loadingDiv.style.display = 'none';
+                        }
+                    });
+
+                    videoElement.addEventListener('canplay', () => {
+                        // Video can start playing
+                        if (loadingDiv) {
+                            loadingDiv.style.display = 'none';
+                        }
+                    });
+
+                    videoElement.addEventListener('error', (e) => {
+                        // Handle video load error
+                        console.error('Video load error:', video.url, e);
+                        if (loadingDiv) {
+                            loadingDiv.textContent = '❌ Video not available';
+                            loadingDiv.style.display = 'block';
+                        }
+                        // Hide video on error
+                        videoElement.style.display = 'none';
+                    });
+                }
+            });
+        }
+
         // Draw button click handler
         document.getElementById('draw-button').addEventListener('click', performDraw);
 
@@ -1057,6 +1469,9 @@
             }
             if (rotationInterval) {
                 clearInterval(rotationInterval);
+            }
+            if (videoRotationInterval) {
+                clearInterval(videoRotationInterval);
             }
             window.removeEventListener('resize', handleResize);
         });

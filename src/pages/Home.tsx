@@ -146,7 +146,7 @@ const Home = () => {
                             initial={{opacity: 0, y: -30}}
                             animate={{opacity: 1, y: 0}}
                             transition={{duration: 0.6, type: "spring", bounce: 0.4}}
-                            className="text-center mb-12 max-w-4xl mx-auto relative"
+                            className="text-center mb-3 max-w-4xl mx-auto relative"
                         >
                             {/* Snowflakes decoration - falling from top, evenly distributed */}
                             <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
@@ -274,7 +274,7 @@ const Home = () => {
                             initial={{opacity: 0}}
                             animate={{opacity: 1}}
                             transition={{delay: 0.8}}
-                            className="max-w-3xl mx-auto mt-8"
+                            className="max-w-3xl mx-auto mt-2"
                         >
                             <Disclaimer/>
                         </motion.div>
