@@ -38,6 +38,7 @@ const STYLES = [
     {value: "hogwarts_winter", label: "⚡ Harry Potter (Hogwarts)"},
     {value: "stranger_things_lights", label: "💡 Stranger Things (Luci)"},
     {value: "white_walker_xmas", label: "❄️ Il Trono di Spade (White Walker)"},
+    {value: "christmas_carol_singer", label: "🎵 Christmas Carol Singer"},
 ];
 
 const DIMENSIONS = [
