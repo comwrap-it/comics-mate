@@ -37,21 +37,31 @@ def get_badges():
                     # Try to load metadata JSON file
                     metadata_file = os.path.join(category_path, f"{img_name}.json")
                     user_name = img_name  # Default to filename
+                    number = None
+                    email = None
                     
                     if os.path.exists(metadata_file):
                         try:
                             with open(metadata_file, "r", encoding="utf-8") as f:
                                 metadata = json.load(f)
                                 user_name = metadata.get("userName", img_name)
+                                number = metadata.get("number")
+                                email = metadata.get("email")
                         except:
                             pass
                     
-                    badges.append({
+                    badge_data = {
                         "id": f"{category}_{img_name}",
                         "name": user_name,
                         "category": category,
                         "imageUrl": img_url
-                    })
+                    }
+                    if number:
+                        badge_data["number"] = number
+                    if email:
+                        badge_data["email"] = email
+                    
+                    badges.append(badge_data)
 
     random.shuffle(badges)
 
@@ -64,6 +74,8 @@ def save_badge():
     image_base64 = data.get("image")
     category = data.get("category")
     user_name = data.get("userName", "Unknown")
+    email = data.get("email", "")
+    number = data.get("number")
 
     if not image_base64 or not category:
         return jsonify({"error": "Missing image or category"}), 400
@@ -85,10 +97,18 @@ def save_badge():
     with open(file_path, "wb") as f:
         f.write(image_data)
 
-    # Save metadata JSON file with user name
+    # Save metadata JSON file with user name, email and timestamp (ALWAYS)
+    metadata = {
+        "userName": user_name,
+        "email": email,
+        "timestamp": timestamp
+    }
+    if number:
+        metadata["number"] = number
+    
     metadata_file = os.path.join(category_path, f"{filename}.json")
     with open(metadata_file, "w", encoding="utf-8") as f:
-        json.dump({"userName": user_name, "timestamp": timestamp}, f, ensure_ascii=False)
+        json.dump(metadata, f, ensure_ascii=False)
 
     return jsonify({"message": "Badge saved", "file": filename})
 
@@ -96,6 +116,58 @@ def save_badge():
 @app.route("/static/<category>/<filename>")
 def serve_image(category, filename):
     return send_from_directory(os.path.join(BASE_DIR, category), filename)
+
+
+@app.route("/get-badges-by-emails", methods=["POST"])
+def get_badges_by_emails():
+    """Get badges by email addresses"""
+    data = request.get_json()
+    emails = data.get("emails", [])
+    
+    if not emails or not isinstance(emails, list):
+        return jsonify({"error": "emails must be a non-empty list"}), 400
+    
+    badges = []
+    email_set = set(email.lower() for email in emails)  # Case-insensitive matching
+    
+    for category in os.listdir(BASE_DIR):
+        category_path = os.path.join(BASE_DIR, category)
+        
+        if os.path.isdir(category_path):
+            for img_name in os.listdir(category_path):
+                if img_name.lower().endswith((".json",)):
+                    continue
+                    
+                if img_name.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
+                    metadata_file = os.path.join(category_path, f"{img_name}.json")
+                    
+                    if os.path.exists(metadata_file):
+                        try:
+                            with open(metadata_file, "r", encoding="utf-8") as f:
+                                metadata = json.load(f)
+                                badge_email = metadata.get("email", "").lower()
+                                
+                                # Check if this badge's email matches any requested email
+                                if badge_email in email_set:
+                                    img_url = f"http://localhost:5000/static/{category}/{img_name}"
+                                    user_name = metadata.get("userName", img_name)
+                                    number = metadata.get("number")
+                                    
+                                    badge_data = {
+                                        "id": f"{category}_{img_name}",
+                                        "name": user_name,
+                                        "category": category,
+                                        "imageUrl": img_url,
+                                        "email": metadata.get("email", "")
+                                    }
+                                    if number:
+                                        badge_data["number"] = number
+                                    
+                                    badges.append(badge_data)
+                        except:
+                            pass
+    
+    return jsonify(badges)
 
 
 @app.route("/delete-badge", methods=["DELETE"])

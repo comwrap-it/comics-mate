@@ -1,8 +1,13 @@
 import axios from "axios";
 
+export interface BadgeResponse {
+    blob: Blob;
+    number?: string;
+}
+
 export const generateBadge = async (
     formData: FormData
-): Promise<Blob> => {
+): Promise<BadgeResponse> => {
     try {
         const response = await axios.post(
             "https://comwrap25.app.n8n.cloud/webhook-test/get-christmas-comics",
@@ -15,7 +20,14 @@ export const generateBadge = async (
                 responseType: "blob",
             }
         );
-        return response.data;
+        
+        // Extract badge number from response headers if present
+        const badgeNumber = response.headers["x-badge-number"] || undefined;
+        
+        return {
+            blob: response.data,
+            number: badgeNumber
+        };
     } catch (error) {
         if (axios.isAxiosError(error)) {
             throw new Error(

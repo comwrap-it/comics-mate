@@ -57,6 +57,10 @@
             z-index: 10;
             border-bottom: 4px solid hsl(142 76% 20%);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
         }
 
         .header h1 {
@@ -64,6 +68,36 @@
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .draw-button {
+            background: hsl(142 76% 20%);
+            color: white;
+            border: 4px solid white;
+            padding: 0.75rem 2rem;
+            font-size: 1.25rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0px white;
+        }
+
+        .draw-button:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px white;
+        }
+
+        .draw-button:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px white;
+        }
+
+        .draw-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         /* Badge wall container */
@@ -265,6 +299,15 @@
             font-weight: 600;
         }
 
+        .badge-number {
+            font-size: 0.875rem;
+            color: hsl(142 30% 50%);
+            font-weight: 700;
+            margin-top: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         /* Empty state */
         .empty-state {
             position: absolute;
@@ -304,6 +347,195 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Podium styles */
+        .podium-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .podium-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .podium-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3rem;
+            max-width: 90vw;
+            padding: 2rem;
+        }
+
+        .podium-winner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(150px) scale(0.8);
+            transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .podium-winner.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            animation: slideUp 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            0% {
+                transform: translateY(150px) scale(0.8);
+                opacity: 0;
+            }
+            60% {
+                transform: translateY(-10px) scale(1.02);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .podium-badge-card {
+            background: white;
+            border: 6px solid;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        /* 2nd place - left - medium size */
+        .podium-winner:nth-child(1) .podium-badge-card {
+            border-color: #C0C0C0;
+            width: 260px;
+            height: 340px;
+            box-shadow: 0 12px 40px rgba(192, 192, 192, 0.5);
+        }
+
+        /* 1st place - center - largest size */
+        .podium-winner:nth-child(2) .podium-badge-card {
+            border-color: #FFD700;
+            width: 320px;
+            height: 400px;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.6);
+        }
+
+        /* 3rd place - right - smallest size */
+        .podium-winner:nth-child(3) .podium-badge-card {
+            border-color: #CD7F32;
+            width: 220px;
+            height: 300px;
+            box-shadow: 0 10px 35px rgba(205, 127, 50, 0.4);
+        }
+
+        .podium-badge-image {
+            width: 100%;
+            height: 70%;
+            object-fit: contain;
+            margin-bottom: 1rem;
+        }
+
+        .podium-badge-info {
+            text-align: center;
+        }
+
+        .podium-badge-name {
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 2nd place - silver */
+        .podium-winner:nth-child(1) .podium-badge-name {
+            color: #C0C0C0;
+        }
+
+        /* 1st place - gold */
+        .podium-winner:nth-child(2) .podium-badge-name {
+            color: #FFD700;
+        }
+
+        /* 3rd place - bronze */
+        .podium-winner:nth-child(3) .podium-badge-name {
+            color: #CD7F32;
+        }
+
+        .podium-rank {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 2nd place - silver */
+        .podium-winner:nth-child(1) .podium-rank {
+            color: #C0C0C0;
+        }
+
+        /* 1st place - gold */
+        .podium-winner:nth-child(2) .podium-rank {
+            color: #FFD700;
+        }
+
+        /* 3rd place - bronze */
+        .podium-winner:nth-child(3) .podium-rank {
+            color: #CD7F32;
+        }
+
+        .podium-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: white;
+            border: 4px solid hsl(0 84% 50%);
+            color: hsl(0 84% 50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 2rem;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0px hsl(0 84% 50%);
+        }
+
+        .podium-close:hover {
+            transform: scale(1.1);
+            box-shadow: 6px 6px 0px hsl(0 84% 50%);
+        }
+
+        .podium-title {
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 4rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
     </style>
 </head>
 <body>
@@ -313,6 +545,7 @@
     <!-- Header -->
     <div class="header">
         <h1>🎄 Secret Santa Badge Wall 🎄</h1>
+        <button class="draw-button" id="draw-button">🎲 Start Draw</button>
     </div>
 
     <!-- Wall Container -->
@@ -326,6 +559,13 @@
             <p>Badges will appear here as they are created...</p>
         </div>
         <div id="badge-container" style="display: none;"></div>
+    </div>
+
+    <!-- Podium Overlay -->
+    <div class="podium-overlay" id="podium-overlay">
+        <div class="podium-title">🏆 Winners 🏆</div>
+        <div class="podium-close" id="podium-close">×</div>
+        <div class="podium-container" id="podium-container"></div>
     </div>
 
     <script>
@@ -495,6 +735,7 @@
                     <div class="badge-info">
                         <div class="badge-name">${escapeHtml(badge.name)}</div>
                         <div class="badge-category">${escapeHtml(badge.category)}</div>
+                        ${badge.number ? `<div class="badge-number">#${escapeHtml(badge.number)}</div>` : ''}
                     </div>
                 `;
                 
@@ -625,6 +866,189 @@
 
         // Start when page loads
         window.addEventListener('load', init);
+
+        // Draw functionality
+        const DRAW_API_URL = 'https://comwrap25.app.n8n.cloud/webhook/get-draw';
+        const BADGES_BY_EMAIL_API = 'http://localhost:5000/get-badges-by-emails';
+
+        async function performDraw() {
+            const drawButton = document.getElementById('draw-button');
+            const podiumOverlay = document.getElementById('podium-overlay');
+            const podiumContainer = document.getElementById('podium-container');
+            
+            // Disable button
+            drawButton.disabled = true;
+            drawButton.textContent = '🎲 Drawing...';
+            
+            try {
+                // Call n8n API to get winners
+                const response = await fetch(DRAW_API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const drawData = await response.json();
+                
+                // Extract winners from the response
+                // The response is an array with one object containing a "data" array
+                let winners = [];
+                if (Array.isArray(drawData) && drawData.length > 0 && drawData[0].data) {
+                    winners = drawData[0].data;
+                } else if (Array.isArray(drawData)) {
+                    winners = drawData;
+                } else if (drawData.data) {
+                    winners = drawData.data;
+                }
+                
+                if (winners.length !== 3) {
+                    throw new Error(`Expected 3 winners, got ${winners.length}`);
+                }
+                
+                // Extract emails from winners
+                const emails = winners.map(winner => winner.Email || winner.email).filter(Boolean);
+                
+                if (emails.length !== 3) {
+                    throw new Error('Could not extract 3 valid emails from winners');
+                }
+                
+                // Fetch badges by emails
+                const badgesResponse = await fetch(BADGES_BY_EMAIL_API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ emails: emails })
+                });
+                
+                if (!badgesResponse.ok) {
+                    throw new Error(`Failed to fetch badges: ${badgesResponse.status}`);
+                }
+                
+                const badges = await badgesResponse.json();
+                
+                // Create a map of email to badge
+                const badgeMap = new Map();
+                badges.forEach(badge => {
+                    if (badge.email) {
+                        badgeMap.set(badge.email.toLowerCase(), badge);
+                    }
+                });
+                
+                // Match winners with badges
+                const winnersWithBadges = winners.map(winner => {
+                    const email = (winner.Email || winner.email || '').toLowerCase();
+                    const badge = badgeMap.get(email);
+                    return {
+                        winner: winner,
+                        badge: badge || null
+                    };
+                });
+                
+                // Show podium
+                showPodium(winnersWithBadges);
+                
+            } catch (error) {
+                console.error('Error performing draw:', error);
+                alert('Error performing draw: ' + error.message);
+            } finally {
+                // Re-enable button
+                drawButton.disabled = false;
+                drawButton.textContent = '🎲 Start Draw';
+            }
+        }
+
+        function showPodium(winnersWithBadges) {
+            const podiumOverlay = document.getElementById('podium-overlay');
+            const podiumContainer = document.getElementById('podium-container');
+            
+            // Clear previous content
+            podiumContainer.innerHTML = '';
+            
+            // Order: 2nd place (left), 1st place (center), 3rd place (right)
+            const orderedWinners = [
+                { ...winnersWithBadges[1], rank: 2, medal: '🥈' },
+                { ...winnersWithBadges[0], rank: 1, medal: '🥇' },
+                { ...winnersWithBadges[2], rank: 3, medal: '🥉' }
+            ];
+            
+            orderedWinners.forEach((item, index) => {
+                const winnerDiv = document.createElement('div');
+                winnerDiv.className = 'podium-winner';
+                
+                const winner = item.winner;
+                const badge = item.badge;
+                const rank = item.rank;
+                const medal = item.medal;
+                
+                // If badge is not found, show placeholder
+                if (!badge) {
+                    winnerDiv.innerHTML = `
+                        <div class="podium-rank">${medal}</div>
+                        <div class="podium-badge-card">
+                            <div class="badge-image-container" style="height: 70%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, hsl(142 20% 95%), hsl(142 30% 98%));">
+                                <div style="font-size: 4rem; opacity: 0.3;">🎁</div>
+                            </div>
+                            <div class="podium-badge-info">
+                                <div class="podium-badge-name">${escapeHtml(winner.Nome || winner.nome || 'Unknown')}</div>
+                                <div style="color: hsl(142 30% 40%); font-size: 0.9rem;">Badge not found</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    winnerDiv.innerHTML = `
+                        <div class="podium-rank">${medal}</div>
+                        <div class="podium-badge-card">
+                            <img src="${badge.imageUrl}" alt="${badge.name}" class="podium-badge-image" onerror="this.style.display='none'">
+                            <div class="podium-badge-info">
+                                <div class="podium-badge-name">${escapeHtml(badge.name)}</div>
+                                <div style="color: hsl(142 30% 40%); font-size: 0.9rem; text-transform: capitalize;">${escapeHtml(badge.category)}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                podiumContainer.appendChild(winnerDiv);
+                
+                // Trigger animation with staggered timing
+                // 3rd place: 0ms, 2nd place: 5000ms, 1st place: 10000ms
+                let delay = 0;
+                if (rank === 3) {
+                    delay = 0; // 3rd place arrives first
+                } else if (rank === 2) {
+                    delay = 5000; // 2nd place after 5 seconds
+                } else if (rank === 1) {
+                    delay = 10000; // 1st place after 10 seconds
+                }
+                
+                setTimeout(() => {
+                    winnerDiv.classList.add('show');
+                }, delay);
+            });
+            
+            // Show overlay
+            podiumOverlay.classList.add('show');
+        }
+
+        // Close podium
+        document.getElementById('podium-close').addEventListener('click', () => {
+            document.getElementById('podium-overlay').classList.remove('show');
+        });
+
+        // Click outside to close
+        document.getElementById('podium-overlay').addEventListener('click', (e) => {
+            if (e.target.id === 'podium-overlay') {
+                document.getElementById('podium-overlay').classList.remove('show');
+            }
+        });
+
+        // Draw button click handler
+        document.getElementById('draw-button').addEventListener('click', performDraw);
 
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {

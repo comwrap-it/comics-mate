@@ -1,13 +1,12 @@
 import {useForm} from "react-hook-form";
 import {useState} from "react";
 import {motion} from "framer-motion";
-import {Sparkles, Wand2, Gift, Star} from "lucide-react";
+import {Gift} from "lucide-react";
 import {toast} from "react-toastify";
 import {Button} from "./ui/button";
 import {Input} from "./ui/input";
 import {Label} from "./ui/label";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "./ui/select";
-import {Textarea} from "./ui/textarea";
 import {ImageUpload} from "./ImageUpload";
 import {Loader} from "./Loader";
 import {BadgePreview} from "./BadgePreview";
@@ -26,28 +25,19 @@ interface FormData {
     ai_model: string;
     dimensions?: string;
     quality?: string;
-    action_prompt: string;
 }
 
 const STYLES = [
-    {value: "santa-helper", label: "🎅 Santa's Helper"},
-    {value: "grinch", label: "👹 Grinch"},
-    {value: "stranger-things", label: "🎬 Stranger Things Style"},
-    {value: "elf-worker", label: "🧝 Workshop Elf"},
-    {value: "reindeer-rider", label: "🦌 Reindeer Rider"},
-    {value: "snowman-builder", label: "⛄ Snowman Builder"},
-    {value: "gift-deliverer", label: "🎁 Gift Deliverer"},
-    {value: "christmas-angel", label: "👼 Christmas Angel"},
-    {value: "gingerbread-chef", label: "🍪 Gingerbread Chef"},
-    {value: "carol-singer", label: "🎵 Carol Singer"},
-    {value: "tree-decorator", label: "🎄 Tree Decorator"},
-    {value: "fireplace-keeper", label: "🔥 Fireplace Keeper"},
-];
-
-const AI_MODELS = [
-    {value: "gemini", label: "Google Gemini"},
-    {value: "openai", label: "OpenAI"},
-    {value: "firefly", label: "Adobe Firefly"},
+    {value: "classic_santa_claus", label: "🎅 Santa Claus Style"},
+    {value: "the_grinch", label: "👹 Il Grinch"},
+    {value: "home_alone_kevin", label: "🏠 Mamma ho perso l'aereo"},
+    {value: "buddy_the_elf", label: "🧝 Elf (Buddy)"},
+    {value: "cinepanettone_90s", label: "🎬 Cinepanettone '90s"},
+    {value: "fantozzi_office", label: "👔 Fantozzi (Cena Aziendale)"},
+    {value: "tim_burton_style", label: "🎃 Nightmare Before Christmas"},
+    {value: "hogwarts_winter", label: "⚡ Harry Potter (Hogwarts)"},
+    {value: "stranger_things_lights", label: "💡 Stranger Things (Luci)"},
+    {value: "white_walker_xmas", label: "❄️ Il Trono di Spade (White Walker)"},
 ];
 
 const DIMENSIONS = [
@@ -65,11 +55,10 @@ const QUALITY = [
 export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: RegistrationFormProps) => {
     const {register, handleSubmit, watch, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
-            style: "santa-helper",
+            style: "classic_santa_claus",
             ai_model: "gemini",
             dimensions: "square",
             quality: "medium",
-            action_prompt: "",
         },
     });
 
@@ -77,9 +66,9 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
     const [generatedImage, setGeneratedImage] = useState<string>("");
     const [category, setCategory] = useState<string>("");
     const [photoFile, setPhotoFile] = useState<File | null>(null);
+    const [badgeNumber, setBadgeNumber] = useState<string | undefined>(undefined);
 
     const selectedStyle = watch("style");
-    const selectedAiModel = watch("ai_model");
 
 
     const onSubmit = async (data: FormData) => {
@@ -102,14 +91,14 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
             formData.append("quality", data.quality);
             formData.append("model", data.ai_model);
             formData.append("video_model", data.ai_model);
-            formData.append("customPrompt", data.action_prompt);
             formData.append("image", photoFile); // photoFile è un oggetto File
 
-            const responseBlob = await generateBadge(formData);
+            const response = await generateBadge(formData);
 
-            const imageUrl = URL.createObjectURL(responseBlob);
+            const imageUrl = URL.createObjectURL(response.blob);
             setGeneratedImage(imageUrl);
             setCategory(data.style);
+            setBadgeNumber(response.number);
             onBadgeGenerated(imageUrl, data.name, data.style);
             toast.success("Badge generated!");
         } catch (error) {
@@ -130,7 +119,7 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                 reader.readAsDataURL(blob);
             });
 
-            // Get the name from the form data
+            // Get the name and email from the form data
             const formData = watch();
             fetch("http://localhost:5000/save-badge", {
                 method: "POST",
@@ -139,6 +128,8 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                     image: base64,
                     category: category,
                     userName: formData.name || "Unknown",
+                    email: formData.email || "",
+                    number: badgeNumber,
                 })
             })
                 .then(res => res.json())
@@ -235,94 +226,6 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                                     ))}
                                 </SelectContent>
                             </Select>
-                        </div>
-
-                        {/* AI Model */}
-                        <div className="space-y-2">
-                            <Label className="text-lg font-bold">
-                                AI Model <span className="text-primary">*</span>
-                            </Label>
-                            <Select
-                                value={selectedAiModel}
-                                onValueChange={(value) => setValue("ai_model", value)}
-                            >
-                                <SelectTrigger className="h-14 text-lg border-2 border-foreground bg-background">
-                                    <SelectValue/>
-                                </SelectTrigger>
-                                <SelectContent className="border-2 border-foreground bg-background">
-                                    {AI_MODELS.map((model) => (
-                                        <SelectItem key={model.value} value={model.value} className="text-lg">
-                                            {model.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* OpenAI Options */}
-                        {selectedAiModel === "openai" && (
-                            <motion.div
-                                initial={{opacity: 0, height: 0}}
-                                animate={{opacity: 1, height: "auto"}}
-                                exit={{opacity: 0, height: 0}}
-                                className="space-y-6 p-6 bg-secondary/10 border-2 border-foreground rounded-xl"
-                            >
-                                {/* Dimensions */}
-                                <div className="space-y-2">
-                                    <Label className="text-lg font-bold">Dimensioni</Label>
-                                    <Select
-                                        value={watch("dimensions")}
-                                        onValueChange={(value) => setValue("dimensions", value)}
-                                    >
-                                        <SelectTrigger
-                                            className="h-14 text-lg border-2 border-foreground bg-background">
-                                            <SelectValue/>
-                                        </SelectTrigger>
-                                        <SelectContent className="border-2 border-foreground bg-background">
-                                            {DIMENSIONS.map((dim) => (
-                                                <SelectItem key={dim.value} value={dim.value} className="text-lg">
-                                                    {dim.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Quality */}
-                                <div className="space-y-2">
-                                    <Label className="text-lg font-bold">Qualità</Label>
-                                    <Select
-                                        value={watch("quality")}
-                                        onValueChange={(value) => setValue("quality", value)}
-                                    >
-                                        <SelectTrigger
-                                            className="h-14 text-lg border-2 border-foreground bg-background">
-                                            <SelectValue/>
-                                        </SelectTrigger>
-                                        <SelectContent className="border-2 border-foreground bg-background">
-                                            {QUALITY.map((q) => (
-                                                <SelectItem key={q.value} value={q.value} className="text-lg">
-                                                    {q.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {/* Action Prompt */}
-                        <div className="space-y-2">
-                            <Label htmlFor="action_prompt" className="text-lg font-bold flex items-center gap-2">
-                                <Star className="w-5 h-5 text-accent"/>
-                                Custom actions
-                            </Label>
-                            <Textarea
-                                id="action_prompt"
-                                {...register("action_prompt")}
-                                placeholder="e.g.: wearing a Santa hat, holding a gift, with Christmas lights in the background"
-                                className="min-h-32 text-lg border-2 border-foreground resize-none"
-                            />
                         </div>
 
                         {/* Submit Button */}

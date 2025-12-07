@@ -27,3 +27,5 @@ Il server si avvierà su **http://localhost:5001**
 - ❄️ Animazioni natalizie (fiocchi di neve)
 - 📱 Responsive e ottimizzato per proiezione
 
+
+
