@@ -10,7 +10,7 @@ export const generateBadge = async (
 ): Promise<BadgeResponse> => {
     try {
         const response = await axios.post(
-            "https://comwrap25.app.n8n.cloud/webhook-test/get-christmas-comics",
+            "https://comwrap25.app.n8n.cloud/webhook/get-christmas-comics",
             formData,
             {
                 timeout: 180000,
