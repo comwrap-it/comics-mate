@@ -329,12 +329,14 @@
         }
 
         .badge-number {
-            font-size: 0.875rem;
-            color: hsl(142 30% 50%);
-            font-weight: 700;
-            margin-top: 0.25rem;
-            text-transform: uppercase;
+            font-size: 1.25rem;
+            color: hsl(0 84% 50%);
+            font-weight: 900;
+            margin-top: 0.5rem;
+            margin-bottom: 0.25rem;
+            text-transform: none;
             letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         /* Empty state */
@@ -877,8 +879,8 @@
                     </div>
                     <div class="badge-info">
                         <div class="badge-name">${escapeHtml(badge.name)}</div>
-                        <div class="badge-category">${escapeHtml(badge.category)}</div>
                         ${badge.number ? `<div class="badge-number">#${escapeHtml(badge.number)}</div>` : ''}
+                        <div class="badge-category">${escapeHtml(badge.category)}</div>
                     </div>
                 `;
                 

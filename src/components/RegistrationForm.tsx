@@ -10,7 +10,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "./u
 import {ImageUpload} from "./ImageUpload";
 import {Loader} from "./Loader";
 import {BadgePreview} from "./BadgePreview";
-import {generateBadge} from "@/utils/api";
+import {generateBadge, getNumberByEmail} from "@/utils/api";
 
 interface RegistrationFormProps {
     onBadgeGenerated: (imageUrl: string, name: string, category: string) => void;
@@ -99,7 +99,22 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
             const imageUrl = URL.createObjectURL(response.blob);
             setGeneratedImage(imageUrl);
             setCategory(data.style);
-            setBadgeNumber(response.number);
+            
+            // Always try to get number from get-videos API using email
+            let number = response.number; // Fallback to header number if available
+            if (data.email) {
+                try {
+                    const numberFromVideos = await getNumberByEmail(data.email);
+                    if (numberFromVideos !== null) {
+                        number = numberFromVideos.toString();
+                    }
+                } catch (error) {
+                    console.error("Error fetching number from videos:", error);
+                    // Keep the number from response headers if available
+                }
+            }
+            setBadgeNumber(number);
+            
             onBadgeGenerated(imageUrl, data.name, data.style);
             toast.success("Badge generated!");
         } catch (error) {
