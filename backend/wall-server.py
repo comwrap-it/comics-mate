@@ -16,7 +16,7 @@ def wall_favicon():
     return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'wall-favicon.svg')
 
 if __name__ == '__main__':
-    print("Christmas Badge Wall Server starting on http://localhost:5001")
+    print("Superhero Comics Mate Badge Wall Server starting on http://localhost:5001")
     print("Open this URL on your projection screen!")
     app.run(debug=True, port=5001, host='0.0.0.0')
 

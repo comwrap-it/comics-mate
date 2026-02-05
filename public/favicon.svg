@@ -1,15 +1,9 @@
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Background -->
-  <rect width="32" height="32" rx="6" fill="#DC2626"/>
+  <rect width="32" height="32" rx="6" fill="#2563EB"/>
   
-  <!-- Gift box -->
-  <rect x="10" y="12" width="12" height="10" rx="1" fill="#FFFFFF"/>
-  <rect x="10" y="12" width="12" height="4" fill="#22C55E"/>
-  <line x1="16" y1="12" x2="16" y2="22" stroke="#DC2626" stroke-width="1.5"/>
-  <line x1="10" y1="16" x2="22" y2="16" stroke="#DC2626" stroke-width="1.5"/>
-  
-  <!-- Bow on top -->
-  <circle cx="13" cy="10" r="2" fill="#DC2626"/>
-  <circle cx="19" cy="10" r="2" fill="#DC2626"/>
-  <path d="M11 10 Q16 8 21 10" stroke="#DC2626" stroke-width="1.5" fill="none"/>
+  <!-- Shield shape -->
+  <path d="M16 4 L26 8 L26 14 Q26 22 16 28 Q6 22 6 14 L6 8 Z" fill="#FFFFFF" stroke="#1E40AF" stroke-width="1.5"/>
+  <!-- Lightning / bolt inside shield -->
+  <path d="M17 10 L13 18 L16 18 L15 22 L19 14 L16 14 Z" fill="#F59E0B" stroke="#B45309" stroke-width="0.8" stroke-linejoin="round"/>
 </svg>

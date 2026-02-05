@@ -1,7 +1,7 @@
 import {useForm} from "react-hook-form";
 import {useState} from "react";
 import {motion} from "framer-motion";
-import {Gift} from "lucide-react";
+import {Zap} from "lucide-react";
 import {toast} from "react-toastify";
 import {Button} from "./ui/button";
 import {Input} from "./ui/input";
@@ -28,17 +28,20 @@ interface FormData {
 }
 
 const STYLES = [
-    {value: "classic_santa_claus", label: "🎅 Santa Claus Style"},
-    {value: "the_grinch", label: "👹 Il Grinch"},
-    {value: "home_alone_kevin", label: "🏠 Mamma ho perso l'aereo"},
-    {value: "buddy_the_elf", label: "🧝 Elf (Buddy)"},
-    {value: "cinepanettone_90s", label: "🎬 Cinepanettone '90s"},
-    {value: "fantozzi_office", label: "👔 Fantozzi (Cena Aziendale)"},
-    {value: "tim_burton_style", label: "🎃 Nightmare Before Christmas"},
-    {value: "hogwarts_winter", label: "⚡ Harry Potter (Hogwarts)"},
-    {value: "stranger_things_lights", label: "💡 Stranger Things (Luci)"},
-    {value: "white_walker_xmas", label: "❄️ Il Trono di Spade (White Walker)"},
-    {value: "christmas_carol_singer", label: "🎵 Christmas Carol Singer"},
+    {value: "batman", label: "🦇 Batman (Cavaliere Oscuro)"},
+    {value: "superman", label: "🦸 Superman (Uomo d'Acciaio)"},
+    {value: "wonder_woman", label: "⚔️ Wonder Woman (Amazzone)"},
+    {value: "spider_man", label: "🕷️ Spider-Man (Ragno)"},
+    {value: "iron_man", label: "🤖 Iron Man (Armatura)"},
+    {value: "captain_america", label: "🛡️ Captain America (Scudo)"},
+    {value: "hulk", label: "💪 Hulk (Mostro Verde)"},
+    {value: "thor", label: "⚡ Thor (Dio del Tuono)"},
+    {value: "black_widow", label: "🕸️ Black Widow (Spia)"},
+    {value: "black_panther", label: "🐾 Black Panther (Wakanda)"},
+    {value: "doctor_strange", label: "🔮 Doctor Strange (Mistico)"},
+    {value: "captain_marvel", label: "✨ Captain Marvel (Cosmic)"},
+    {value: "wolverine", label: "🐺 Wolverine (Artigli)"},
+    {value: "deadpool", label: "😎 Deadpool (Anti-eroe)"},
 ];
 
 const DIMENSIONS = [
@@ -56,7 +59,7 @@ const QUALITY = [
 export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: RegistrationFormProps) => {
     const {register, handleSubmit, watch, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
-            style: "classic_santa_claus",
+            style: "batman",
             ai_model: "gemini",
             dimensions: "square",
             quality: "medium",
@@ -252,8 +255,8 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                flex items-center gap-3 transform transition-transform duration-300 hover:scale-105 shadow-lg"
                                 disabled={isLoading}
                             >
-                                <Gift className="!w-6 !h-6 !mt-1"/>
-                                Generate Christmas Badge
+                                <Zap className="!w-6 !h-6 !mt-1"/>
+                                Generate Superhero Badge
                             </Button>
                         </div>
 

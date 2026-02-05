@@ -16,10 +16,9 @@ export const Disclaimer = () => {
                 <div className="flex items-start gap-2">
                     <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0 mt-0.5"/>
                     <div className="text-xs text-muted-foreground">
-                        <p className="font-semibold text-foreground mb-1">Privacy & Data</p>
+                        <p className="font-semibold text-foreground mb-1">Privacy e dati</p>
                         <p>
-                            The data will be used exclusively for badge generation and for sending the personalized video
-                            via email. No information will be stored after the Secret Santa event.
+                            I dati saranno usati solo per la generazione del badge e per l'invio del video personalizzato
                         </p>
                     </div>
                 </div>

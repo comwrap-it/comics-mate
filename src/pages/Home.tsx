@@ -1,5 +1,5 @@
 import {motion} from "framer-motion";
-import {RefreshCcw, Gift, Snowflake, Star, Trash2} from "lucide-react";
+import {RefreshCcw, Shield, Zap, Star, Trash2} from "lucide-react";
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {RegistrationForm} from "@/components/RegistrationForm";
@@ -92,9 +92,8 @@ const Home = () => {
 
     return (
         <div className="min-h-screen bg-background flex justify-center gap-8 relative overflow-hidden">
-            {/* Background Christmas decorations - subtle stars in corners */}
+            {/* Background superhero decorations - subtle stars in corners */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-                {/* Decorative stars in corners - subtle and elegant */}
                 {[
                     {x: "5%", y: "10%", size: "w-8 h-8"},
                     {x: "95%", y: "15%", size: "w-6 h-6"},
@@ -148,14 +147,12 @@ const Home = () => {
                             transition={{duration: 0.6, type: "spring", bounce: 0.4}}
                             className="text-center mb-3 max-w-4xl mx-auto relative"
                         >
-                            {/* Snowflakes decoration - falling from top, evenly distributed */}
+                            {/* Sparkles / lightning decoration - falling from top */}
                             <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
                                 {[...Array(12)].map((_, i) => {
-                                    // Distribute snowflakes evenly across the width
                                     const xPosition = (i * (100 / 12)) + (Math.random() * (100 / 12));
                                     const delay = i * 0.3;
                                     const duration = 8 + Math.random() * 4;
-                                    
                                     return (
                                         <motion.div
                                             key={i}
@@ -177,7 +174,7 @@ const Home = () => {
                                                 ease: "linear",
                                             }}
                                         >
-                                            <Snowflake className="w-3 h-3" />
+                                            <Zap className="w-3 h-3" />
                                         </motion.div>
                                     );
                                 })}
@@ -195,11 +192,11 @@ const Home = () => {
                                     }}
                                     className="bg-primary text-primary-foreground px-8 py-4 border-4 border-foreground rounded-2xl inline-flex items-center gap-3 shadow-lg"
                                 >
-                                    <Gift className="w-10 h-10" fill="currentColor"/>
+                                    <Shield className="w-10 h-10" fill="currentColor"/>
                                     <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
-                                        Secret Santa
+                                        Superhero
                                     </h1>
-                                    <Gift className="w-10 h-10" fill="currentColor"/>
+                                    <Shield className="w-10 h-10" fill="currentColor"/>
                                 </motion.div>
                             </div>
 
@@ -209,7 +206,7 @@ const Home = () => {
                                 transition={{delay: 0.2, duration: 0.5}}
                                 className="text-3xl md:text-4xl font-black text-foreground mb-4 uppercase relative z-10"
                             >
-                                🎄 Christmas Badge Generator 🎄
+                                🦸 Superhero Badge Generator 🦸
                             </motion.h2>
 
                             <motion.p
@@ -218,7 +215,7 @@ const Home = () => {
                                 transition={{delay: 0.4}}
                                 className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto relative z-10"
                             >
-                                Create your festive Christmas badge!
+                                Crea il tuo badge da supereroe con l'AI!
                             </motion.p>
                             <motion.p
                                 initial={{opacity: 0}}
@@ -226,12 +223,12 @@ const Home = () => {
                                 transition={{delay: 0.4}}
                                 className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto relative z-10"
                             >
-                                Upload your photo and become a Christmas hero for your Secret Santa!
+                                Carica la tua foto e trasforma in Batman, Spider-Man, Wonder Woman e altri!
                             </motion.p>
 
-                            {/* Christmas decoration */}
+                            {/* Superhero decoration */}
                             <div className="mt-6 flex justify-center gap-4 relative z-10">
-                                {["🎁", "⭐", "❄️"].map((emoji, i) => (
+                                {["🦸", "⚡", "🛡️"].map((emoji, i) => (
                                     <motion.div
                                         key={emoji}
                                         initial={{opacity: 0, scale: 0, rotate: -180}}
@@ -286,8 +283,8 @@ const Home = () => {
                             {/* Header with button */}
                             <div className="sticky top-0 bg-background border-b-4 border-foreground z-30 p-6 flex items-center justify-between shadow-lg">
                                 <h2 className="text-3xl font-black uppercase flex items-center gap-3">
-                                    <Gift className="w-8 h-8 text-primary"/>
-                                    Your Christmas Badges
+                                    <Shield className="w-8 h-8 text-primary"/>
+                                    I tuoi Superhero Badge
                                 </h2>
                                 <button
                                     onClick={() => setShowBadgeList(!showBadgeList)}
@@ -309,12 +306,12 @@ const Home = () => {
                             <div className="p-8">
                                 {previousBadges.length === 0 ? (
                                     <div className="text-center py-16">
-                                        <Gift className="w-16 h-16 text-primary mx-auto mb-4 opacity-50"/>
+                                        <Shield className="w-16 h-16 text-primary mx-auto mb-4 opacity-50"/>
                                         <p className="text-xl font-bold text-muted-foreground">
-                                            No badges generated yet
+                                            Nessun badge ancora
                                         </p>
                                         <p className="text-sm text-muted-foreground mt-2">
-                                            Create your first Christmas badge!
+                                            Crea il tuo primo superhero badge!
                                         </p>
                                     </div>
                                 ) : (

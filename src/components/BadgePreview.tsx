@@ -1,5 +1,5 @@
 import {motion} from "framer-motion";
-import {Download, X, Gift} from "lucide-react";
+import {Download, X, Shield} from "lucide-react";
 import {Button} from "./ui/button";
 
 interface BadgePreviewProps {
@@ -15,7 +15,7 @@ export const BadgePreview = ({imageUrl, onClose, badgeName, showSuccessMessage =
         link.href = imageUrl;
         // Extract filename from URL if it's a full URL, otherwise use default
         const urlParts = imageUrl.split("/");
-        const filename = urlParts.length > 0 ? urlParts[urlParts.length - 1] : "secret-santa-christmas-badge.png";
+        const filename = urlParts.length > 0 ? urlParts[urlParts.length - 1] : "superhero-summit-badge.png";
         link.download = filename;
         document.body.appendChild(link);
         link.click();
@@ -35,9 +35,9 @@ export const BadgePreview = ({imageUrl, onClose, badgeName, showSuccessMessage =
                     <div
                         className="bg-primary text-primary-foreground p-6 border-b-4 border-foreground rounded-t-xl flex justify-between items-center">
                         <div className="flex items-center gap-3">
-                            <Gift className="w-8 h-8"/>
+                            <Shield className="w-8 h-8"/>
                             <h2 className="text-3xl font-bold uppercase">
-                                {badgeName ? `${badgeName}'s Badge 🎄` : "Your Christmas Badge! 🎄"}
+                                {badgeName ? `${badgeName}'s Badge 🦸` : "Il tuo Superhero Badge! 🦸"}
                             </h2>
                         </div>
                         <button
@@ -88,10 +88,10 @@ export const BadgePreview = ({imageUrl, onClose, badgeName, showSuccessMessage =
                             className="bg-success/10 border-t-4 border-foreground p-4 text-center"
                         >
                             <p className="text-success font-bold text-lg">
-                                🎉 Christmas Badge successfully generated! 🎉
+                                🎉 Superhero Badge generato con successo! 🎉
                             </p>
                             <p className="text-muted-foreground text-sm mt-1">
-                                Perfect for your Secret Santa! You will receive your custom video by email.
+                                Perfetto per il Superhero Comics Mate! Riceverai il video personalizzato via email.
                             </p>
                         </motion.div>
                     )}

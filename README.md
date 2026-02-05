@@ -1,14 +1,14 @@
-# Secret Santa - Christmas Badge Generator 🎄
+# Superhero Comics Mate - Superhero Badge Generator 🦸
 
-A festive web application for generating Christmas badges with AI. Perfect for Secret Santa events!
+Web app per generare badge da supereroe con l’AI (n8n). Perfetta per eventi a tema supereroi!
 
 ## Features
 
-- 🎅 Generate Christmas-themed badges with AI
-- 🎮 Mini-game while waiting for badge generation
-- 📸 Upload your photo and transform into Christmas characters
-- 🗑️ Manage and delete your generated badges
-- 🎨 Beautiful Christmas-themed UI
+- 🦸 Genera badge a tema supereroi con l’AI (Batman, Spider-Man, Wonder Woman, Iron Man, ecc.)
+- 🎮 Mini-gioco mentre aspetti la generazione del badge
+- 📸 Carica la tua foto e trasformati in supereroe
+- 🗑️ Gestisci e elimina i badge generati
+- 🎨 UI a tema comic/superhero
 
 ## Prerequisites
 
@@ -57,17 +57,19 @@ npm run dev:all
 
 ## Backend Server
 
-The backend server runs on `http://localhost:5000` and handles:
-- Badge generation via n8n webhook
-- Badge storage in `./badges/` directory
-- Badge retrieval and deletion
+Il backend gira su `http://localhost:5000` e gestisce:
+- Generazione badge tramite webhook n8n (`get-superhero-comics`)
+- Salvataggio badge in `./badges/`
+- Recupero e cancellazione badge
+
+**Nota:** In n8n va configurato un workflow che espone il webhook `get-superhero-comics` e genera le immagini in stile supereroe in base al campo `type` (es. batman, superman, spider_man, iron_man, ecc.).
 
 ## Frontend
 
-The frontend runs on `http://localhost:5173` (default Vite port) and provides:
-- User interface for badge generation
-- Badge gallery
-- Mini-game during generation
+Il frontend gira su `http://localhost:5173` (Vite) e offre:
+- Form per nome, email, foto e stile supereroe
+- Galleria badge
+- Mini-gioco durante la generazione
 
 ---
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secret Santa - Badge Wall</title>
+    <title>Superhero - Badge Wall</title>
     <link rel="icon" type="image/svg+xml" href="/wall-favicon.svg">
     <style>
         * {
@@ -14,13 +14,13 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, hsl(0 0% 98%), hsl(142 20% 98%));
+            background: linear-gradient(135deg, hsl(0 0% 98%), hsl(221 20% 98%));
             overflow: hidden;
             height: 100vh;
             position: relative;
         }
 
-        /* Snowflakes animation */
+        /* Sparkles / stars animation */
         .snowflakes {
             position: absolute;
             top: 0;
@@ -33,7 +33,7 @@
 
         .snowflake {
             position: absolute;
-            color: hsl(0 84% 50% / 0.2);
+            color: hsl(221 83% 53% / 0.25);
             font-size: 1.5em;
             animation: fall linear infinite;
         }
@@ -50,12 +50,12 @@
             top: 0;
             left: 0;
             right: 0;
-            background: hsl(0 84% 50%);
+            background: hsl(221 83% 53%);
             color: white;
             padding: 1.5rem;
             text-align: center;
             z-index: 10;
-            border-bottom: 4px solid hsl(142 76% 20%);
+            border-bottom: 4px solid hsl(221 83% 18%);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
@@ -72,7 +72,7 @@
         }
 
         .draw-button {
-            background: hsl(142 76% 20%);
+            background: hsl(221 83% 18%);
             color: white;
             border: 4px solid white;
             padding: 0.75rem 2rem;
@@ -768,7 +768,7 @@
 
     <!-- Header -->
     <div class="header">
-        <h1>🎄 Secret Santa Badge Wall 🎄</h1>
+        <h1>🦸 Superhero Comics Mate Badge Wall 🦸</h1>
         <div style="display: flex; gap: 1rem; align-items: center;">
             <button class="view-toggle-button" id="view-toggle-button" data-view="cards">📸 Cards View</button>
             <button class="draw-button" id="draw-button">🎲 Start Draw</button>
@@ -822,15 +822,15 @@
         const ROTATION_INTERVAL = 8000; // Change badges every 8 seconds
         const VIDEO_ROTATION_INTERVAL = 10000; // Change videos every 10 seconds
 
-        // Create snowflakes
+        // Create sparkles
         function createSnowflakes() {
             const snowflakesContainer = document.getElementById('snowflakes');
             const snowflakeCount = 30;
-            
+            const sparkleEmojis = ['⚡', '⭐', '🛡️'];
             for (let i = 0; i < snowflakeCount; i++) {
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake';
-                snowflake.innerHTML = '❄️';
+                snowflake.innerHTML = sparkleEmojis[i % sparkleEmojis.length];
                 snowflake.style.left = Math.random() * 100 + '%';
                 snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
                 snowflake.style.animationDelay = Math.random() * 2 + 's';

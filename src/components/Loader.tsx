@@ -1,5 +1,5 @@
 import {motion} from "framer-motion";
-import {ChristmasGame} from "./ChristmasGame";
+import {SuperheroGame} from "./SuperheroGame";
 
 export const Loader = () => {
     return (
@@ -13,16 +13,16 @@ export const Loader = () => {
                 {/* Header */}
                 <div className="w-full bg-primary text-primary-foreground p-4 border-b-4 border-foreground text-center">
                     <h3 className="text-2xl font-black uppercase">
-                        🎄 Creating your Christmas Badge... 🎄
+                        🦸 Creazione Superhero Badge in corso... 🦸
                     </h3>
                     <p className="text-sm mt-1 opacity-90">
-                        Santa's elves are working! Play while you wait...
+                        L'AI sta forgiando il tuo alter ego! Gioca mentre aspetti...
                     </p>
                 </div>
 
                 {/* Game */}
                 <div className="flex-1 w-full overflow-y-auto p-4">
-                    <ChristmasGame />
+                    <SuperheroGame />
                 </div>
             </motion.div>
         </div>
