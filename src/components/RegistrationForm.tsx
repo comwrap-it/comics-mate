@@ -28,20 +28,21 @@ interface FormData {
 }
 
 const STYLES = [
-    {value: "batman", label: "🦇 Batman (Cavaliere Oscuro)"},
-    {value: "superman", label: "🦸 Superman (Uomo d'Acciaio)"},
-    {value: "wonder_woman", label: "⚔️ Wonder Woman (Amazzone)"},
-    {value: "spider_man", label: "🕷️ Spider-Man (Ragno)"},
-    {value: "iron_man", label: "🤖 Iron Man (Armatura)"},
-    {value: "captain_america", label: "🛡️ Captain America (Scudo)"},
-    {value: "hulk", label: "💪 Hulk (Mostro Verde)"},
-    {value: "thor", label: "⚡ Thor (Dio del Tuono)"},
-    {value: "black_widow", label: "🕸️ Black Widow (Spia)"},
-    {value: "black_panther", label: "🐾 Black Panther (Wakanda)"},
-    {value: "doctor_strange", label: "🔮 Doctor Strange (Mistico)"},
-    {value: "captain_marvel", label: "✨ Captain Marvel (Cosmic)"},
-    {value: "wolverine", label: "🐺 Wolverine (Artigli)"},
-    {value: "deadpool", label: "😎 Deadpool (Anti-eroe)"},
+    {value: "batman", label: "🦇 Batman (senza maschera)"},
+    {value: "superman", label: "🦸 Superman"},
+    {value: "wonder_woman", label: "⚔️ Wonder Woman"},
+    {value: "spider_man", label: "🕷️ Spider-Man (senza maschera)"},
+    {value: "iron_man", label: "🤖 Iron Man (casco aperto)"},
+    {value: "captain_america", label: "🛡️ Captain America"},
+    {value: "thor", label: "⚡ Thor (Mjolnir)"},
+    {value: "black_widow", label: "🕸️ Black Widow"},
+    {value: "jedi", label: "⭐ Jedi (Lightsaber)"},
+    {value: "hogwarts", label: "🪄 Hogwarts (Grifondoro)"},
+    {value: "jack_sparrow", label: "🏴‍☠️ Jack Sparrow (Pirata)"},
+    {value: "daenerys", label: "🐉 Daenerys (Madre dei Draghi)"},
+    {value: "dragon_ball", label: "🐉 Dragon Ball"},
+    {value: "barbie", label: "💖 Barbie / Ken"},
+    {value: "viking", label: "⚔️ Guerriero Vikingo"},
 ];
 
 const DIMENSIONS = [

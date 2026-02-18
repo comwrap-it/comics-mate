@@ -1,5 +1,12 @@
 import axios from "axios";
 
+const N8N_BASE = "https://comwrap25.app.n8n.cloud";
+/** "webhook" = produzione, "webhook-test" = test n8n. In dev default = webhook-test se non impostato. */
+const WEBHOOK_TYPE =
+    import.meta.env.VITE_N8N_WEBHOOK_TYPE ??
+    (import.meta.env.MODE === "development" ? "webhook-test" : "webhook");
+const BADGE_WEBHOOK_URL = `${N8N_BASE}/${WEBHOOK_TYPE}/get-superhero-comics`;
+
 export interface BadgeResponse {
     blob: Blob;
     number?: string;
@@ -25,7 +32,7 @@ export const generateBadge = async (
 ): Promise<BadgeResponse> => {
     try {
         const response = await axios.post(
-            "https://comwrap25.app.n8n.cloud/webhook/get-superhero-comics",
+            BADGE_WEBHOOK_URL,
             formData,
             {
                 timeout: 180000,

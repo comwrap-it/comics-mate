@@ -64,6 +64,28 @@ Il backend gira su `http://localhost:5000` e gestisce:
 
 **Nota:** In n8n va configurato un workflow che espone il webhook `get-superhero-comics` e genera le immagini in stile supereroe in base al campo `type` (es. batman, superman, spider_man, iron_man, ecc.).
 
+### Webhook n8n: test vs produzione
+
+L’app può usare due endpoint n8n:
+
+| Casistica | URL | Quando usarlo |
+|-----------|-----|----------------|
+| **Test** | `.../webhook-test/get-superhero-comics` | Sviluppo e prove (workflow in modalità test in n8n) |
+| **Produzione** | `.../webhook/get-superhero-comics` | Build di produzione / evento live |
+
+Comportamento:
+- **In development** (`npm run dev`): se non imposti nulla, viene usato **webhook-test**.
+- **In production** (build): viene usato **webhook**.
+- Per sovrascrivere: crea un file `.env` o `.env.local` nella root del progetto con:
+  ```bash
+  # Per test (anche in production build)
+  VITE_N8N_WEBHOOK_TYPE=webhook-test
+
+  # Per produzione (anche in dev)
+  VITE_N8N_WEBHOOK_TYPE=webhook
+  ```
+  Puoi copiare `.env.example` in `.env` e modificare il valore.
+
 ## Frontend
 
 Il frontend gira su `http://localhost:5173` (Vite) e offre:
