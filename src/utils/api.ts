@@ -52,6 +52,11 @@ export const generateBadge = async (
         };
     } catch (error) {
         if (axios.isAxiosError(error)) {
+            // Per errori 400 con blob, rilancia l'errore axios così il form può leggere il blob
+            if (error.response?.status === 400 && error.response.data instanceof Blob) {
+                throw error;
+            }
+            
             throw new Error(
                 error.response?.data?.error ||
                 error.message ||

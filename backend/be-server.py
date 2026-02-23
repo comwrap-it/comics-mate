@@ -75,6 +75,8 @@ def save_badge():
     category = data.get("category")
     user_name = data.get("userName", "Unknown")
     email = data.get("email", "")
+    company = data.get("company", "")
+    accept_profiling = data.get("acceptProfiling", False)
     number = data.get("number")
 
     if not image_base64 or not category:
@@ -103,6 +105,9 @@ def save_badge():
         "email": email,
         "timestamp": timestamp
     }
+    if company:
+        metadata["company"] = company
+    metadata["acceptProfiling"] = accept_profiling
     if number:
         metadata["number"] = number
     

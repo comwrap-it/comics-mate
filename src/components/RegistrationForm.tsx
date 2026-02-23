@@ -10,6 +10,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "./u
 import {ImageUpload} from "./ImageUpload";
 import {Loader} from "./Loader";
 import {BadgePreview} from "./BadgePreview";
+import axios from "axios";
 import {generateBadge, getNumberByEmail} from "@/utils/api";
 
 interface RegistrationFormProps {
@@ -20,11 +21,14 @@ interface RegistrationFormProps {
 interface FormData {
     name: string;
     email: string;
+    company: string;
     photo: string;
     style: string;
     ai_model: string;
     dimensions?: string;
     quality?: string;
+    acceptPolicy: boolean;
+    acceptProfiling: boolean;
 }
 
 const STYLES = [
@@ -32,17 +36,15 @@ const STYLES = [
     {value: "superman", label: "🦸 Superman"},
     {value: "wonder_woman", label: "⚔️ Wonder Woman"},
     {value: "spider_man", label: "🕷️ Spider-Man (senza maschera)"},
-    {value: "iron_man", label: "🤖 Iron Man (casco aperto)"},
     {value: "captain_america", label: "🛡️ Captain America"},
     {value: "thor", label: "⚡ Thor (Mjolnir)"},
     {value: "black_widow", label: "🕸️ Black Widow"},
-    {value: "jedi", label: "⭐ Jedi (Lightsaber)"},
     {value: "hogwarts", label: "🪄 Hogwarts (Grifondoro)"},
-    {value: "jack_sparrow", label: "🏴‍☠️ Jack Sparrow (Pirata)"},
-    {value: "daenerys", label: "🐉 Daenerys (Madre dei Draghi)"},
     {value: "dragon_ball", label: "🐉 Dragon Ball"},
     {value: "barbie", label: "💖 Barbie / Ken"},
-    {value: "viking", label: "⚔️ Guerriero Vikingo"},
+    {value: "lara_croft", label: "🏹 Lara Croft (Tomb Raider)"},
+    {value: "wednesday_addams", label: "🖤 Mercoledì Addams"},
+    {value: "cleopatra", label: "👑 Cleopatra"},
 ];
 
 const DIMENSIONS = [
@@ -58,16 +60,21 @@ const QUALITY = [
 ];
 
 export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: RegistrationFormProps) => {
-    const {register, handleSubmit, watch, setValue, formState: {errors}} = useForm<FormData>({
-        defaultValues: {
-            style: "batman",
-            ai_model: "gemini",
-            dimensions: "square",
-            quality: "medium",
-        },
+    const defaultValues = {
+        style: "batman",
+        ai_model: "gemini",
+        dimensions: "square",
+        quality: "medium",
+        company: "",
+        acceptPolicy: false,
+        acceptProfiling: false,
+    };
+    const {register, handleSubmit, watch, setValue, reset, formState: {errors}} = useForm<FormData>({
+        defaultValues,
     });
 
     const [isLoading, setIsLoading] = useState(false);
+    const [resetKey, setResetKey] = useState(0);
     const [generatedImage, setGeneratedImage] = useState<string>("");
     const [category, setCategory] = useState<string>("");
     const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -89,6 +96,9 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("email", data.email);
+            formData.append("company", data.company ?? "");
+            formData.append("acceptPolicy", data.acceptPolicy ? "true" : "false");
+            formData.append("acceptProfiling", data.acceptProfiling ? "true" : "false");
             formData.append("type", data.style);
             formData.append("class", data.style); // Use style as class since they're unified
             const dimensionObj = DIMENSIONS.find(d => d.value === data.dimensions);
@@ -123,7 +133,25 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
             toast.success("Badge generated!");
         } catch (error) {
             console.error("Error while generating badge:", error);
-            toast.error("Error while generating badge :(");
+            
+            // Gestione specifica per errore 400 con "Failed to generate image."
+            if (axios.isAxiosError(error) && error.response?.status === 400 && error.response.data instanceof Blob) {
+                try {
+                    const errorText = await error.response.data.text();
+                    if (errorText.includes("Failed to generate image.")) {
+                        toast.error("Non è stato possibile generare l'immagine. Riprova più tardi.", {
+                            autoClose: 5000,
+                        });
+                        return;
+                    }
+                } catch (blobError) {
+                    console.error("Error reading error blob:", blobError);
+                }
+            }
+            
+            toast.error("Errore durante la generazione del badge. Riprova.", {
+                autoClose: 5000,
+            });
         } finally {
             setIsLoading(false);
         }
@@ -149,6 +177,8 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                     category: category,
                     userName: formData.name || "Unknown",
                     email: formData.email || "",
+                    company: formData.company || "",
+                    acceptProfiling: formData.acceptProfiling ?? false,
                     number: badgeNumber,
                 })
             })
@@ -221,8 +251,21 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                             )}
                         </div>
 
+                        {/* Azienda */}
+                        <div className="space-y-2">
+                            <Label htmlFor="company" className="text-lg font-bold">
+                                Azienda
+                            </Label>
+                            <Input
+                                id="company"
+                                {...register("company")}
+                                placeholder="Nome azienda"
+                                className="h-14 text-lg border-2 border-foreground"
+                            />
+                        </div>
+
                         {/* Photo Upload */}
-                        <ImageUpload onFileChange={setPhotoFile}/>
+                        <ImageUpload key={resetKey} onFileChange={setPhotoFile}/>
 
                         {/* Style */}
                         <div className="space-y-2">
@@ -248,8 +291,52 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                             </Select>
                         </div>
 
-                        {/* Submit Button */}
-                        <div className="flex justify-center">
+                        {/* Obbligatorio: consenso trattamento per il servizio */}
+                        <div className="space-y-2">
+                            <label className="flex items-start gap-3 cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    {...register("acceptPolicy", {
+                                        required: "Devi accettare la privacy policy e i termini per procedere",
+                                    })}
+                                    className="mt-1.5 h-5 w-5 rounded border-2 border-foreground accent-primary cursor-pointer"
+                                />
+                                <span className="text-base text-foreground group-hover:text-foreground/90">
+                                    Accetto la{" "}
+                                    <a href="https://www.reply.com/en/privacy-notice-marketing" className="font-semibold underline hover:text-primary" target="_blank" rel="noopener noreferrer">privacy policy</a>
+                                    {" "}e i termini di utilizzo per la generazione del badge e l'invio del video personalizzato.
+                                </span>
+                            </label>
+                            {errors.acceptPolicy && (
+                                <p className="text-destructive text-sm font-semibold">{errors.acceptPolicy.message}</p>
+                            )}
+                        </div>
+
+                        {/* Facoltativo: consenso alla profilazione (art. 6.1.a GDPR) */}
+                        <div className="space-y-3 rounded-xl border-2 border-foreground bg-muted/30 p-4">
+                            <p className="text-sm text-foreground">
+                                <strong>Consenso alla profilazione e analisi comportamentale</strong>
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                                Prendo atto che i miei dati personali potranno essere trattati mediante analisi automatizzate per valutare i miei interessi e preferenze, al fine di inviarmi comunicazioni di marketing mirate (art. 6.1.a GDPR). La mancata accettazione non impedisce la partecipazione all'evento.
+                            </p>
+                            <label className="flex items-start gap-3 cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    {...register("acceptProfiling")}
+                                    className="mt-1.5 h-5 w-5 rounded border-2 border-foreground accent-primary cursor-pointer"
+                                />
+                                <span className="text-sm font-semibold text-foreground group-hover:text-foreground/90">
+                                    ACCETTO il trattamento dei miei dati per finalità di profilazione
+                                </span>
+                            </label>
+                            <p className="text-xs text-muted-foreground">
+                                Ho letto l'<a href="https://www.reply.com/en/privacy-notice-marketing" className="underline hover:text-primary" target="_blank" rel="noopener noreferrer">informativa privacy</a> e sono consapevole che posso revocare il consenso in qualsiasi momento con la stessa facilità con cui l'ho prestato.
+                            </p>
+                        </div>
+
+                        {/* Submit Button + Reset */}
+                        <div className="flex justify-center items-center gap-3">
                             <Button
                                 type="submit"
                                 className="bg-primary text-primary-foreground !px-12 !py-8 border-2 border-foreground rounded-lg font-black text-lg
@@ -257,7 +344,20 @@ export const RegistrationForm = ({onBadgeGenerated, setShowBadgeList}: Registrat
                                 disabled={isLoading}
                             >
                                 <Zap className="!w-6 !h-6 !mt-1"/>
-                                Generate Superhero Badge
+                                Generate
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="text-sm font-semibold py-2 px-4 border-2 border-foreground rounded-lg"
+                                disabled={isLoading}
+                                onClick={() => {
+                                    reset(defaultValues);
+                                    setPhotoFile(null);
+                                    setResetKey((k) => k + 1);
+                                }}
+                            >
+                                Reset
                             </Button>
                         </div>
 

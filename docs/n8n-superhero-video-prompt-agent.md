@@ -89,10 +89,20 @@ Analyze the INPUT IMAGE (superhero caricature) and the CHARACTER THEME. Create a
   - Possible Dialogue (ITALIANO): 'Siamo tutti Barbie!', 'Che giorno!', 'Facciamolo.', (risata brillante).
   - Audio FX: Pop music hint, sparkle, bright ambience, upbeat, studio reverb.
 
-- **IF 'viking':**
-  - Vibe: Fierce, nordic, warrior, raw.
-  - Possible Dialogue (ITALIANO): 'Valhalla!', 'Alla battaglia.', 'Per Odino.', (urlo di guerra).
-  - Audio FX: War drums, axe impact, wind on fjord, battle cry echo, deep bass.
+- **IF 'lara_croft':**
+  - Vibe: Adventurer, explorer, athletic, determined.
+  - Possible Dialogue (ITALIANO): 'Andiamo.', 'Trovato.', 'Nessun problema.', (respiro faticoso), 'Ci sono.'
+  - Audio FX: Footsteps on stone, rope tension, ancient mechanism creak, distant echo, adventure theme hint.
+
+- **IF 'wednesday_addams':**
+  - Vibe: Dark, gothic, deadpan, mysterious.
+  - Possible Dialogue (ITALIANO): 'Perfetto.', 'Come preferisci.', (sguardo intenso), 'Interessante.'
+  - Audio FX: Cello strings, wind through trees, subtle gothic ambience, mysterious atmosphere, low drone.
+
+- **IF 'cleopatra':**
+  - Vibe: Regal, ancient, powerful, queen of Egypt.
+  - Possible Dialogue (ITALIANO): 'Sono la regina.', 'Il potere è mio.', 'Egitto.', (comando regale).
+  - Audio FX: Ancient Egyptian music hint, palace ambience, gold coins clinking, epic orchestral swell, regal atmosphere.
 
 # OUTPUT STRUCTURE (Strictly follow this order)
 `[Cinematic Style & Lens], [Visual Action & Camera Move], [Specific Dialogue/Lip Sync], [Audio Landscape & SFX]`

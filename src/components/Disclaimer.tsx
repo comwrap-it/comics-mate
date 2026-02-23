@@ -1,5 +1,5 @@
 import {ShieldCheck} from "lucide-react";
-import comwrapImage from "../../assets/Comwrap Christmas.png";
+import comwrapImage from "../../assets/logo.svg";
 
 export const Disclaimer = () => {
     return (

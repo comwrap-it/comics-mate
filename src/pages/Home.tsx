@@ -206,7 +206,7 @@ const Home = () => {
                                 transition={{delay: 0.2, duration: 0.5}}
                                 className="text-3xl md:text-4xl font-black text-foreground mb-4 uppercase relative z-10"
                             >
-                                🦸 Superhero Badge Generator 🦸
+                                🦸 Badge Generator 🦸
                             </motion.h2>
 
                             <motion.p
@@ -347,11 +347,6 @@ const Home = () => {
                                                     <p className="text-sm text-muted-foreground capitalize mt-1">
                                                         {badge.category}
                                                     </p>
-                                                    {badge.number && (
-                                                        <p className="text-xs font-semibold text-muted-foreground mt-1 uppercase tracking-wide">
-                                                            #{badge.number}
-                                                        </p>
-                                                    )}
                                                 </div>
                                             </motion.li>
                                         ))}

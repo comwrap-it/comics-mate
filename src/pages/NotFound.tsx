@@ -1,6 +1,6 @@
 import {useLocation} from "react-router-dom";
 import {useEffect} from "react";
-import {Gift} from "lucide-react";
+import {Shield} from "lucide-react";
 import {motion} from "framer-motion";
 
 const NotFound = () => {
@@ -29,16 +29,16 @@ const NotFound = () => {
                     }}
                     className="mb-6 inline-block"
                 >
-                    <Gift className="w-20 h-20 text-primary mx-auto" />
+                    <Shield className="w-20 h-20 text-primary mx-auto" />
                 </motion.div>
                 <h1 className="mb-4 text-6xl font-black text-primary">404</h1>
-                <p className="mb-4 text-2xl font-bold text-foreground">🎄 Oops! Page not found 🎄</p>
-                <p className="mb-6 text-lg text-muted-foreground">Santa couldn't find this page!</p>
+                <p className="mb-4 text-2xl font-bold text-foreground">Oops! Pagina non trovata</p>
+                <p className="mb-6 text-lg text-muted-foreground">Questa pagina non esiste.</p>
                 <a 
                     href="/" 
                     className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-lg font-bold border-2 border-foreground hover:scale-105 transition-transform shadow-lg"
                 >
-                    Return to Secret Santa
+                    Torna alla home
                 </a>
             </motion.div>
         </div>

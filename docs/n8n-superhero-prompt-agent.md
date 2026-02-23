@@ -92,6 +92,21 @@ Take the user's "Character Key", look up the core concept, and generate a **comp
   Core Visuals: Red and black suit with mask, dual katanas or guns, irreverent dynamic pose, fourth-wall wink vibe.
   Vibe/Expansion: Chaotic action backdrop, explosions or city roof. Bold comic style, high saturation, motion lines hint, humorous yet badass, sharp details, 8k.
 
+- IF 'lara_croft':
+  Character Name: "Lara Croft"
+  Core Visuals: Brown tank top, cargo shorts, dual pistols in holsters, braided ponytail, athletic build, determined expression.
+  Vibe/Expansion: Ancient temple ruins or jungle, warm golden light, adventure atmosphere. Cinematic action, detailed textures, photorealistic, 8k, masterpiece.
+
+- IF 'wednesday_addams':
+  Character Name: "Wednesday Addams"
+  Core Visuals: Black dress with white collar, long dark braids, pale skin, deadpan expression, gothic aesthetic.
+  Vibe/Expansion: Dark gothic mansion or forest, moody lighting, Tim Burton style. Cinematic gothic atmosphere, detailed fabric, sharp contrast, 8k.
+
+- IF 'cleopatra':
+  Character Name: "Cleopatra"
+  Core Visuals: Ancient Egyptian royal dress, gold jewelry and headdress, kohl-rimmed eyes, regal pose, ornate accessories.
+  Vibe/Expansion: Ancient Egyptian palace or temple, golden hour lighting, hieroglyphs in background. Cinematic historical epic, rich textures, warm golden tones, photorealistic, 8k, masterpiece.
+
 # INPUT VARIABLE
 Character Key: {{ $('Webhook Trigger').item.json.body.type }}
 
